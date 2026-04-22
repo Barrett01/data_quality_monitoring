@@ -24,8 +24,9 @@ from src.dqm.storage.repository import CheckResultRepository, SnapshotRepository
 class CompletenessChecker(BaseChecker):
     """完整性检查器
 
-    M1: gmdb_plate_info 的 stkcode vs Pulsar 快照的 stkcode
+    M1: gmdb_plate_info 的 stkcode vs Pulsar 快照的 stkcode（全局比对）
     M4: ads_fin_index_compn_stock_interface_ds 的 compn_stock_code vs Pulsar 快照的 compn_stock_code
+        （按 stkcode 分组比对）
     """
 
     def __init__(
@@ -34,10 +35,12 @@ class CompletenessChecker(BaseChecker):
         table: str,
         key_field: str,
         mysql_storage: MySQLStorage,
+        group_field: str | None = None,
     ):
         super().__init__(monitor_id, Dimension.COMPLETENESS)
         self.table = table
         self.key_field = key_field
+        self.group_field = group_field  # M4 按 stkcode 分组，M1 为 None（全局比对）
         self._mysql_storage = mysql_storage
         self._check_result_repo = CheckResultRepository(mysql_storage)
         self._snapshot_repo = SnapshotRepository(mysql_storage)
@@ -111,14 +114,18 @@ class CompletenessChecker(BaseChecker):
                 "extra": [],
                 "online_count": 0,
                 "snapshot_count": 0,
+                "group_details": [],
                 "error": self._pulsar_error,
             }
 
-        # 查询线上表的 key_field 集合
+        # M4 分组比对模式：按 group_field 分组后比对每组内的 key_field 集合
+        if self.group_field:
+            return self._check_grouped(check_date, check_round, log)
+
+        # M1 全局比对模式
         online_keys = self._query_online_keys(check_date)
         log.info(f"线上表查询完成 | table={self.table}, count={len(online_keys)}")
 
-        # 查询临时快照表的 key_field 集合
         snapshot_keys = self._query_snapshot_keys(check_date, check_round)
         log.info(f"快照表查询完成 | count={len(snapshot_keys)}")
 
@@ -144,7 +151,116 @@ class CompletenessChecker(BaseChecker):
             "extra": extra,
             "online_count": len(online_set),
             "snapshot_count": len(snapshot_set),
+            "group_details": [],
         }
+
+    def _check_grouped(self, check_date: date, check_round: int, log) -> dict:
+        """M4 分组比对：按 group_field 分组后比对每组内的 key_field 集合。"""
+        # 查询线上表按 group_field 分组的 key_field 集合
+        online_grouped = self._query_online_grouped_keys(check_date)
+        log.info(
+            f"线上表分组查询完成 | table={self.table}, "
+            f"groups={len(online_grouped)}, total_keys={sum(len(v) for v in online_grouped.values())}"
+        )
+
+        # 查询快照表按 group_field 分组的 key_field 集合
+        snapshot_grouped = self._query_snapshot_grouped_keys(check_date, check_round)
+        log.info(
+            f"快照表分组查询完成 | groups={len(snapshot_grouped)}, "
+            f"total_keys={sum(len(v) for v in snapshot_grouped.values())}"
+        )
+
+        # 快照为空 → NODATA
+        total_snapshot = sum(len(v) for v in snapshot_grouped.values())
+        if total_snapshot == 0:
+            return {
+                "status": CheckResult.NODATA,
+                "missing": [],
+                "extra": [],
+                "online_count": sum(len(v) for v in online_grouped.values()),
+                "snapshot_count": 0,
+                "group_details": [],
+            }
+
+        # 按分组比对
+        all_missing = []
+        all_extra = []
+        group_details = []
+        all_groups = sorted(set(online_grouped.keys()) | set(snapshot_grouped.keys()))
+
+        for group_key in all_groups:
+            online_set = set(online_grouped.get(group_key, []))
+            snapshot_set = set(snapshot_grouped.get(group_key, []))
+
+            missing_in_group = sorted(snapshot_set - online_set)
+            extra_in_group = sorted(online_set - snapshot_set)
+
+            if missing_in_group or extra_in_group:
+                group_detail = {
+                    "group_key": group_key,
+                    "missing": missing_in_group[:20],
+                    "extra": extra_in_group[:20],
+                    "online_count": len(online_set),
+                    "snapshot_count": len(snapshot_set),
+                }
+                group_details.append(group_detail)
+                all_missing.extend(missing_in_group)
+                all_extra.extend(extra_in_group)
+
+        total_online = sum(len(v) for v in online_grouped.values())
+
+        if not group_details:
+            status = CheckResult.PASS
+        else:
+            status = CheckResult.FAIL
+
+        return {
+            "status": status,
+            "missing": sorted(all_missing)[:50],
+            "extra": sorted(all_extra)[:50],
+            "online_count": total_online,
+            "snapshot_count": total_snapshot,
+            "group_details": group_details[:20],
+        }
+
+    def _query_online_grouped_keys(self, check_date: date) -> dict[str, list[str]]:
+        """从线上表查询按 group_field 分组的 key_field 集合。"""
+        sql = (
+            f"SELECT `{self.group_field}`, `{self.key_field}` FROM `{self.table}` "
+            f"WHERE `{self.group_field}` IS NOT NULL AND `{self.key_field}` IS NOT NULL"
+        )
+        try:
+            rows = self._mysql_storage.execute_query(sql)
+        except Exception as e:
+            log = get_logger(self.monitor_id, self.dimension)
+            log.critical(f"MySQL 查询线上表失败 | table={self.table}, error={e}")
+            raise
+
+        grouped: dict[str, list[str]] = {}
+        for row in rows:
+            gk = row.get(self.group_field)
+            kf = row.get(self.key_field)
+            if gk and kf:
+                grouped.setdefault(gk, []).append(kf)
+        # 去重
+        return {k: list(set(v)) for k, v in grouped.items()}
+
+    def _query_snapshot_grouped_keys(self, check_date: date, check_round: int) -> dict[str, list[str]]:
+        """从快照表查询按 group_field 分组的 key_field 集合。"""
+        sql = (
+            f"SELECT `{self.group_field}`, `{self.key_field}` FROM `dqm_security_info_snapshot` "
+            f"WHERE check_date = %s AND check_round = %s "
+            f"AND `{self.group_field}` IS NOT NULL AND `{self.key_field}` IS NOT NULL"
+        )
+        rows = self._mysql_storage.execute_query(sql, (check_date, check_round))
+
+        grouped: dict[str, list[str]] = {}
+        for row in rows:
+            gk = row.get(self.group_field)
+            kf = row.get(self.key_field)
+            if gk and kf:
+                grouped.setdefault(gk, []).append(kf)
+        return {k: list(set(v)) for k, v in grouped.items()}
 
     def _query_online_keys(self, check_date: date) -> list[str]:
         """从 MySQL 线上表查询 key_field 集合。"""
@@ -168,15 +284,17 @@ class CompletenessChecker(BaseChecker):
 
     def _record(self, check_date: date, check_time: datetime, check_round: int, result: dict):
         """将检查结果写入 dqm_check_result。"""
-        detail = json.dumps(
-            {
-                "missing": result["missing"][:50],
-                "extra": result["extra"][:50],
-                "online_count": result["online_count"],
-                "snapshot_count": result["snapshot_count"],
-            },
-            ensure_ascii=False,
-        )
+        record_detail = {
+            "missing": result["missing"][:50],
+            "extra": result["extra"][:50],
+            "online_count": result["online_count"],
+            "snapshot_count": result["snapshot_count"],
+        }
+        # M4 分组比对时额外记录 group_details
+        if result.get("group_details"):
+            record_detail["group_details"] = result["group_details"][:20]
+
+        detail = json.dumps(record_detail, ensure_ascii=False)
         self._check_result_repo.upsert(
             check_date=check_date,
             check_round=check_round,
@@ -198,14 +316,25 @@ class CompletenessChecker(BaseChecker):
             log.info(msg)
 
         elif status == CheckResult.FAIL:
-            msg = AlertFormatter.format_completeness_fail(
-                self.monitor_id,
-                self.table,
-                result["online_count"],
-                result["snapshot_count"],
-                result["missing"],
-                result["extra"],
-            )
+            if result.get("group_details"):
+                # M4 分组比对失败：输出分组摘要
+                msg = AlertFormatter.format_completeness_fail_grouped(
+                    self.monitor_id,
+                    self.table,
+                    result["online_count"],
+                    result["snapshot_count"],
+                    result["group_details"],
+                )
+            else:
+                # M1 全局比对失败
+                msg = AlertFormatter.format_completeness_fail(
+                    self.monitor_id,
+                    self.table,
+                    result["online_count"],
+                    result["snapshot_count"],
+                    result["missing"],
+                    result["extra"],
+                )
             log.error(msg)
 
         elif status == CheckResult.SKIP:

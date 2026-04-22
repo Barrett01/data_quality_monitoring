@@ -32,6 +32,7 @@ def create_app() -> tuple[DQMScheduler, Coordinator]:
                 table=cfg["table"],
                 key_field=cfg["key_field"],
                 mysql_storage=mysql_storage,
+                group_field=cfg.get("group_field"),
             )
             coordinator.register(monitor_id, checker)
         elif cfg["dimension"] == Dimension.TIMELINESS:

@@ -43,6 +43,7 @@ M4_CONFIG = {
     "dimension": Dimension.COMPLETENESS,
     "table": TABLE_ADS_FIN_INDEX,
     "key_field": "compn_stock_code",
+    "group_field": "stkcode",  # 按 stkcode 分组后比对 compn_stock_code
     "cron_times": ["02:00", "08:42", "08:58", "09:04"],
     "needs_pulsar": True,
 }

@@ -43,6 +43,7 @@ class MySQLStorage:
     def execute_query(self, sql: str, params: tuple | None = None) -> list[dict]:
         """执行查询。"""
         conn = self._get_connection()
+        conn.commit()  # 刷新事务快照，确保读取其他连接最新已提交的数据
         with conn.cursor() as cursor:
             cursor.execute(sql, params)
             return cursor.fetchall()

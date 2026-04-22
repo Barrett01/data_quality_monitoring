@@ -91,3 +91,10 @@
 2026-04-22 14:22:02 | CRITICAL | MonitorID.M1 | Dimension.COMPLETENESS | Pulsar 连接失败，跳过完整性比对 | error=Connection refused
 2026-04-22 14:22:12 | CRITICAL | MonitorID.M1 | Dimension.COMPLETENESS | MySQL 查询线上表失败 | table=gmdb_plate_info, error=DB Error
 2026-04-22 14:22:12 | CRITICAL | MonitorID.M1 | Dimension.COMPLETENESS | 检查异常: Pulsar down
+2026-04-22 14:30:05 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=2, missing=[], extra=["0424", "0439", "0443", "0447"]
+2026-04-22 14:30:05 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=1, missing=[], extra=["0424", "0438", "0439", "0443", "0447"]
+2026-04-22 14:34:06 | ERROR    | MonitorID.M4 | Dimension.COMPLETENESS | ads_fin_index_compn_stock_interface_ds 成分股代码不一致 | online=7, snapshot=1, diff_groups=2, details=[0001.BK: missing=1, extra=3; 0477.BK: missing=0, extra=4]
+2026-04-22 14:41:12 | ERROR    | MonitorID.M4 | Dimension.COMPLETENESS | ads_fin_index_compn_stock_interface_ds 成分股代码不一致 | online=7, snapshot=1, diff_groups=2, details=[0001.BK: missing=1, extra=3; 0477.BK: missing=0, extra=4]
+2026-04-22 14:46:57 | ERROR    | MonitorID.M4 | Dimension.COMPLETENESS | ads_fin_index_compn_stock_interface_ds 成分股代码不一致 | online=7, snapshot=1, diff_groups=2, details=[0001.BK: missing=1, extra=3; 0477.BK: missing=0, extra=4]
+2026-04-22 14:46:57 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=2, missing=[], extra=["0424", "0439", "0443", "0447"]
+2026-04-22 14:46:57 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=1, missing=[], extra=["0424", "0438", "0439", "0443", "0447"]

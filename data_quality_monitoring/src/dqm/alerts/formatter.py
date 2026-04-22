@@ -22,6 +22,21 @@ class AlertFormatter:
         )
 
     @staticmethod
+    def format_completeness_fail_grouped(
+        monitor_id: str, table: str, online: int, snapshot: int, group_details: list
+    ) -> str:
+        """M4 分组比对失败时的格式化。"""
+        summary = []
+        for g in group_details[:5]:
+            summary.append(
+                f"{g['group_key']}: missing={len(g['missing'])}, extra={len(g['extra'])}"
+            )
+        return (
+            f"{table} 成分股代码不一致 | online={online}, snapshot={snapshot}, "
+            f"diff_groups={len(group_details)}, details=[{'; '.join(summary)}]"
+        )
+
+    @staticmethod
     def format_timeliness_pass(monitor_id: str, table: str, count: int, send_date: str) -> str:
         return f"{table} 当天数据已到达 | count={count}, send_date={send_date}"
 
