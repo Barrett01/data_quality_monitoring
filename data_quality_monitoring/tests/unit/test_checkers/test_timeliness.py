@@ -1,3 +1,5 @@
+
+
 """M2 及时性检查器单元测试。
 
 测试 TimelinessChecker 针对 M2 (gmdb_plate_info send_date) 的所有核心逻辑：

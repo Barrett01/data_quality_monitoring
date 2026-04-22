@@ -3,3 +3,36 @@
 2026-04-21 16:09:03 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=1, missing=[], extra=["0424", "0438", "0439", "0443", "0447"]
 2026-04-21 20:58:58 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=1, missing=[], extra=["0424", "0438", "0439", "0443", "0447"]
 2026-04-21 22:02:45 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=2, missing=[], extra=["0424", "0439", "0443", "0447"]
+2026-04-22 10:43:19 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 10:43:20 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2098-06-15
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:18:54 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:21:59 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 11:21:59 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2098-06-15
+2026-04-22 11:21:59 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:21:59 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:22:00 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:22:00 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:22:00 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 11:22:00 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:22:00 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:22:00 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:22:25 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2098-06-15
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
