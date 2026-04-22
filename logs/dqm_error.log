@@ -1,0 +1,5 @@
+2026-04-21 15:40:29 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=1, missing=[], extra=["0424", "0438", "0439", "0443", "0447"]
+2026-04-21 15:48:41 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=1, missing=[], extra=["0424", "0438", "0439", "0443", "0447"]
+2026-04-21 16:09:03 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=1, missing=[], extra=["0424", "0438", "0439", "0443", "0447"]
+2026-04-21 20:58:58 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=1, missing=[], extra=["0424", "0438", "0439", "0443", "0447"]
+2026-04-21 22:02:45 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=2, missing=[], extra=["0424", "0439", "0443", "0447"]
