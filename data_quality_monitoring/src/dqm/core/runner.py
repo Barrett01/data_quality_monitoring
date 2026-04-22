@@ -8,6 +8,7 @@ from config.monitor_configs import ALL_CONFIGS
 from src.dqm.checkers.accuracy import AccuracyChecker
 from src.dqm.checkers.completeness import CompletenessChecker
 from src.dqm.checkers.timeliness import TimelinessChecker
+from src.dqm.cleanup.cleaner import DataCleaner
 from src.dqm.core.coordinator import Coordinator
 from src.dqm.core.scheduler import DQMScheduler
 from src.dqm.storage.mysql_storage import MySQLStorage
@@ -61,6 +62,14 @@ def create_app() -> tuple[DQMScheduler, Coordinator]:
                 monitor_id=monitor_id,
                 check_round=idx,
             )
+
+    # 注册过期数据清理定时任务（每天 01:00 执行）
+    cleaner = DataCleaner(mysql_storage)
+    scheduler.add_job(
+        job_id="CLEANUP_DAILY",
+        func=cleaner.run,
+        cron_expression="0 1 * * *",
+    )
 
     logger.info("数据质量监控系统初始化完成")
     return scheduler, coordinator

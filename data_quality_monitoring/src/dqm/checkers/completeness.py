@@ -48,6 +48,15 @@ class CompletenessChecker(BaseChecker):
     def _prepare(self, check_date: date, check_time: datetime, check_round: int):
         """采集 Pulsar 快照数据并写入 MySQL 临时表。"""
         log = get_logger(self.monitor_id, self.dimension)
+
+        # 每次检查前清理过期快照（保留 15 天）
+        try:
+            deleted = self._snapshot_repo.cleanup(15)
+            if deleted > 0:
+                log.info(f"清理过期快照数据 | deleted={deleted}, retention=15天")
+        except Exception as e:
+            log.warning(f"清理过期快照数据失败 | error={e}")
+
         log.info(f"开始采集 Pulsar 快照 | check_date={check_date}, check_round={check_round}")
 
         pulsar_collector = PulsarCollector()
