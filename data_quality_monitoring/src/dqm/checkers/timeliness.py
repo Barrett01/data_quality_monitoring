@@ -52,11 +52,11 @@ class TimelinessChecker(BaseChecker):
         send_date_val = self._date_to_send_date(check_date)
 
         # M2: 按 mst_type 分组统计当天各类型数据量
-        # M5: 只查 mst_type='PLATE_STOCKS' 的当天数据
+        # M5: ads_fin 表无 mst_type 字段，直接查 send_date 的记录数
         if self.monitor_id == MonitorID.M2:
             results = self._query_by_mst_type(send_date_val)
         elif self.monitor_id == MonitorID.M5:
-            results = self._query_by_mst_type(send_date_val, mst_type="PLATE_STOCKS")
+            results = self._query_count(send_date_val)
         else:
             results = self._query_count(send_date_val)
 
@@ -150,9 +150,14 @@ class TimelinessChecker(BaseChecker):
             log.info(msg)
 
         elif status == CheckResult.FAIL:
-            msg = AlertFormatter.format_timeliness_fail(
-                self.monitor_id, self.table, result["check_date"]
-            )
+            if self.monitor_id == MonitorID.M5:
+                msg = AlertFormatter.format_timeliness_fail_m5(
+                    self.table, result["check_date"]
+                )
+            else:
+                msg = AlertFormatter.format_timeliness_fail(
+                    self.monitor_id, self.table, result["check_date"]
+                )
             log.error(msg)
 
         elif status == CheckResult.ERROR:

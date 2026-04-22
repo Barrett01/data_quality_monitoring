@@ -45,6 +45,11 @@ class AlertFormatter:
         return f"{table} 无当天数据 | send_date={send_date}"
 
     @staticmethod
+    def format_timeliness_fail_m5(table: str, send_date: str) -> str:
+        """M5 及时性失败：PLATE_STOCKS 数据未及时到达。"""
+        return f"{table} PLATE_STOCKS 数据未及时到达 | send_date={send_date}"
+
+    @staticmethod
     def format_accuracy_pass(monitor_id: str, table: str, total: int) -> str:
         return f"{table} 准确性检查通过 | total={total}, errors=0"
 
