@@ -5,6 +5,7 @@ from __future__ import annotations
 from config.constants import Dimension
 from config.logger_config import setup_logger, get_logger
 from config.monitor_configs import ALL_CONFIGS
+from src.dqm.checkers.accuracy import AccuracyChecker
 from src.dqm.checkers.completeness import CompletenessChecker
 from src.dqm.checkers.timeliness import TimelinessChecker
 from src.dqm.core.coordinator import Coordinator
@@ -37,6 +38,14 @@ def create_app() -> tuple[DQMScheduler, Coordinator]:
             checker = TimelinessChecker(
                 monitor_id=cfg["monitor_id"],
                 table=cfg["table"],
+                mysql_storage=mysql_storage,
+            )
+            coordinator.register(monitor_id, checker)
+        elif cfg["dimension"] == Dimension.ACCURACY:
+            checker = AccuracyChecker(
+                monitor_id=cfg["monitor_id"],
+                table=cfg["table"],
+                key_field=cfg["key_field"],
                 mysql_storage=mysql_storage,
             )
             coordinator.register(monitor_id, checker)

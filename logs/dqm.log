@@ -417,3 +417,395 @@
 2026-04-22 11:25:09 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[]
 2026-04-22 11:25:09 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
 2026-04-22 11:25:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:34 | CRITICAL | MonitorID.M3 | Dimension.ACCURACY | MySQL 查询线上表失败 | table=gmdb_plate_info, error=(1054, "Unknown column 'sum' in 'field list'")
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=2
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=2, errors=0
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "", "field_name": "stkcode", "error_type": "NULL_VALUE", "error_value": ""}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "123", "field_name": "stkcode", "error_type": "REGEX_MISMATCH", "error_value": "123"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "std_stkcode", "error_type": "REGEX_MISMATCH", "error_value": "bad_format"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "INVALID_TYPE"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "sum", "error_type": "TYPE_MISMATCH", "error_value": "-5.0"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=4, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000001", "field_name": "std_stkcode", "error_type": "REGEX_MISMATCH", "error_value": "bad"}, {"record_key": "000001", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "INVALID"}, {"record_key": "000001", "field_name": "sum", "error_type": "TYPE_MISMATCH", "error_value": "-1.0"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=2
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=2, errors=2, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000002", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "BAD_TYPE"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=1, errors=0
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=0
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=0, errors=0
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=1, errors=0
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "123", "field_name": "stkcode", "error_type": "REGEX_MISMATCH", "error_value": "123"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "BAD_TYPE"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "sum", "error_type": "TYPE_MISMATCH", "error_value": "-5.0"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=5, details=[{"record_key": "123", "field_name": "stkcode", "error_type": "REGEX_MISMATCH", "error_value": "123"}, {"record_key": "123", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "123", "field_name": "std_stkcode", "error_type": "REGEX_MISMATCH", "error_value": "bad"}, {"record_key": "123", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "INVALID"}, {"record_key": "123", "field_name": "sum", "error_type": "TYPE_MISMATCH", "error_value": "-1.0"}]
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=1, errors=0
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=0
+2026-04-22 14:14:35 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=0, errors=0
+2026-04-22 14:14:35 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260417, total=7
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=2
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=2, errors=0
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "", "field_name": "stkcode", "error_type": "NULL_VALUE", "error_value": ""}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "123", "field_name": "stkcode", "error_type": "REGEX_MISMATCH", "error_value": "123"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "std_stkcode", "error_type": "REGEX_MISMATCH", "error_value": "bad_format"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "INVALID_TYPE"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=2, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000001", "field_name": "zhishubankuaileibie", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=3, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000001", "field_name": "std_stkcode", "error_type": "REGEX_MISMATCH", "error_value": "bad"}, {"record_key": "000001", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "INVALID"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=2
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=2, errors=2, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000002", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "BAD_TYPE"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=1, errors=0
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=0
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=0, errors=0
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=1, errors=0
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "123", "field_name": "stkcode", "error_type": "REGEX_MISMATCH", "error_value": "123"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "BAD_TYPE"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=2, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000001", "field_name": "zhishubankuaileibie", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=4, details=[{"record_key": "123", "field_name": "stkcode", "error_type": "REGEX_MISMATCH", "error_value": "123"}, {"record_key": "123", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "123", "field_name": "std_stkcode", "error_type": "REGEX_MISMATCH", "error_value": "bad"}, {"record_key": "123", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "INVALID"}]
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=1, errors=0
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=0
+2026-04-22 14:19:09 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=0, errors=0
+2026-04-22 14:19:09 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=6
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=2
+2026-04-22 14:22:01 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=2, missing=[], extra=["0424", "0439", "0443", "0447"]
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=6
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=2
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=6
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=0
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=6
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=6
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=6
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=6
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码完全一致 | online=6, snapshot=6, missing=0, extra=0
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=6
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=2
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=6
+2026-04-22 14:22:01 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=0
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:01 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 开始Dimension.COMPLETENESS检查 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=6
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=6
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码完全一致 | online=6, snapshot=6, missing=0, extra=0
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 开始Dimension.COMPLETENESS检查 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=6
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M1 | Dimension.COMPLETENESS | gmdb_plate_info 核心代码不一致 | online=6, snapshot=1, missing=[], extra=["0424", "0438", "0439", "0443", "0447"]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 开始Dimension.COMPLETENESS检查 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:02 | WARNING  | MonitorID.M1 | Dimension.COMPLETENESS | Pulsar 采集失败，跳过完整性比对 | error=Pulsar connection timeout
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20260417, results=[{'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 7}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-17, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20260417, results=[{'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 7}]
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 当天数据已到达 | count=7, send_date=2026-04-17
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20991231, results=[]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2099-12-31, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20991231, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2098-06-15, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20980615, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2098-06-15
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[{'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 2}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[{'mst_type': 'HOTIDEA_PLATE_INFO', 'count': 1}, {'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 1}, {'mst_type': 'REGION_PLATE_INFO', 'count': 1}]
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 当天数据已到达 | count=3, send_date=2026-04-22
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[{'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 1}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-17, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20260417, results=[{'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 7}]
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 当天数据已到达 | count=7, send_date=2026-04-17
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2099-12-31, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20991231, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | gmdb_plate_info 无当天数据 | send_date=2099-12-31
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[{'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 1}]
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 当天数据已到达 | count=1, send_date=2026-04-22
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, results=[]
+2026-04-22 14:22:02 | ERROR    | MonitorID.M2 | Dimension.TIMELINESS | dqm_test_gmdb_plate_info 无当天数据 | send_date=2026-04-22
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260417, total=7
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=2
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=2, errors=0
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "", "field_name": "stkcode", "error_type": "NULL_VALUE", "error_value": ""}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "123", "field_name": "stkcode", "error_type": "REGEX_MISMATCH", "error_value": "123"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "std_stkcode", "error_type": "REGEX_MISMATCH", "error_value": "bad_format"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "INVALID_TYPE"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=2, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000001", "field_name": "zhishubankuaileibie", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=3, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000001", "field_name": "std_stkcode", "error_type": "REGEX_MISMATCH", "error_value": "bad"}, {"record_key": "000001", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "INVALID"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=2
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=2, errors=2, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000002", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "BAD_TYPE"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=1, errors=0
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=0
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=0, errors=0
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=1, errors=0
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "123", "field_name": "stkcode", "error_type": "REGEX_MISMATCH", "error_value": "123"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=1, details=[{"record_key": "000001", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "BAD_TYPE"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=2, details=[{"record_key": "000001", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "000001", "field_name": "zhishubankuaileibie", "error_type": "NULL_VALUE", "error_value": "NULL"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | ERROR    | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 数据异常 | total=1, errors=4, details=[{"record_key": "123", "field_name": "stkcode", "error_type": "REGEX_MISMATCH", "error_value": "123"}, {"record_key": "123", "field_name": "stkname", "error_type": "NULL_VALUE", "error_value": "NULL"}, {"record_key": "123", "field_name": "std_stkcode", "error_type": "REGEX_MISMATCH", "error_value": "bad"}, {"record_key": "123", "field_name": "mst_type", "error_type": "ENUM_INVALID", "error_value": "INVALID"}]
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=1, errors=0
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=dqm_test_gmdb_plate_info, send_date=20260422, total=0
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | dqm_test_gmdb_plate_info 准确性检查通过 | total=0, errors=0
+2026-04-22 14:22:02 | INFO     | SYSTEM | MySQL | MySQL 连接已关闭
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260422, total=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260422, total=2
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 线上表查询完成 | table=gmdb_plate_info, send_date=20260422, total=0
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M3 | Dimension.ACCURACY | 开始Dimension.ACCURACY检查 | check_date=2026-04-22, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=3
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=3
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=2
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=2
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=2
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=2
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=0
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=0
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=0
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=2
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=3
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 线上表查询完成 | table=gmdb_plate_info, count=0
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 快照表查询完成 | count=2
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 开始采集 Pulsar 快照 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | Pulsar 快照采集完成 | received=3, filtered=2
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 开始采集 Pulsar 快照 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:02 | WARNING  | MonitorID.M1 | Dimension.COMPLETENESS | Pulsar 连接失败(第1次): Connection refused
+2026-04-22 14:22:02 | WARNING  | MonitorID.M1 | Dimension.COMPLETENESS | Pulsar 连接失败(第2次): Connection refused
+2026-04-22 14:22:02 | CRITICAL | MonitorID.M1 | Dimension.COMPLETENESS | Pulsar 连接失败，跳过完整性比对 | error=Connection refused
+2026-04-22 14:22:02 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 开始采集 Pulsar 快照 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:02 | WARNING  | MonitorID.M1 | Dimension.COMPLETENESS | Pulsar 连接失败(第1次): Timeout
+2026-04-22 14:22:12 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | Pulsar 快照采集完成 | received=1, filtered=1
+2026-04-22 14:22:12 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 开始采集 Pulsar 快照 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:12 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | Pulsar 快照采集完成 | received=0, filtered=0
+2026-04-22 14:22:12 | CRITICAL | MonitorID.M1 | Dimension.COMPLETENESS | MySQL 查询线上表失败 | table=gmdb_plate_info, error=DB Error
+2026-04-22 14:22:12 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 开始Dimension.COMPLETENESS检查 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:12 | INFO     | MonitorID.M1 | Dimension.COMPLETENESS | 开始Dimension.COMPLETENESS检查 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:12 | CRITICAL | MonitorID.M1 | Dimension.COMPLETENESS | 检查异常: Pulsar down
+2026-04-22 14:22:12 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20260421, results=[{'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 85}, {'mst_type': 'REGION_PLATE_INFO', 'count': 30}]
+2026-04-22 14:22:12 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20260421, results=[]
+2026-04-22 14:22:12 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20260421, results=[{'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 50}]
+2026-04-22 14:22:12 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 线上表查询完成 | table=gmdb_plate_info, send_date=20260421, results=[{'mst_type': 'INDUSTRY_PLATE_INFO', 'count': 10}]
+2026-04-22 14:22:12 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-21, check_round=1
+2026-04-22 14:22:12 | INFO     | MonitorID.M2 | Dimension.TIMELINESS | 开始Dimension.TIMELINESS检查 | check_date=2026-04-21, check_round=1
