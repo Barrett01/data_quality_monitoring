@@ -77,8 +77,7 @@ class SnapshotRepository:
                 )
                 for r in records
             ]
-            for p in params:
-                self._storage.execute_update(sql, p)
+            self._storage.execute_batch(sql, params)
 
     def get_by_date(self, check_date: date, check_round: int | None = None) -> list[dict]:
         """查询快照数据。"""
@@ -109,19 +108,19 @@ class AccuracyDetailRepository:
         INSERT INTO dqm_accuracy_detail (check_date, check_round, monitor_id, record_key, field_name, error_type, error_value)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        for d in details:
-            self._storage.execute_update(
-                sql,
-                (
-                    check_date,
-                    check_round,
-                    monitor_id,
-                    d.get("record_key"),
-                    d.get("field_name"),
-                    d.get("error_type"),
-                    str(d.get("error_value", "")),
-                ),
+        params = [
+            (
+                check_date,
+                check_round,
+                monitor_id,
+                d.get("record_key"),
+                d.get("field_name"),
+                d.get("error_type"),
+                str(d.get("error_value", "")),
             )
+            for d in details
+        ]
+        self._storage.execute_batch(sql, params)
 
     def cleanup(self, retention_days: int) -> int:
         """清理过期明细。"""

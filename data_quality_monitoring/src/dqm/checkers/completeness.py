@@ -313,6 +313,19 @@ class CompletenessChecker(BaseChecker):
             detail=detail,
         )
 
+    def _record_error(self, check_date: date, check_time: datetime, check_round: int, error_msg: str):
+        """异常时记录 ERROR 状态到 dqm_check_result。"""
+        import json as _json
+        detail = _json.dumps({"error": error_msg}, ensure_ascii=False)
+        self._check_result_repo.upsert(
+            check_date=check_date,
+            check_round=check_round,
+            monitor_id=self.monitor_id,
+            dimension=self.dimension,
+            result=CheckResult.ERROR,
+            detail=detail,
+        )
+
     def _alert(self, check_date: date, check_time: datetime, check_round: int, result: dict):
         """根据检查结果输出告警日志。"""
         log = get_logger(self.monitor_id, self.dimension)

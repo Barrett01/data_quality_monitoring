@@ -418,12 +418,13 @@ class TestPrepare:
         mock_collector.close.assert_called_once()
 
         # 验证快照保存被调用（先 DELETE 再 INSERT）
-        # 只保留 2 条 M1 相关消息，所以应有 2 次 INSERT
-        insert_calls = [
-            c for c in mock_mysql_storage.execute_update.call_args_list
-            if "INSERT INTO dqm_security_info_snapshot" in c[0][0]
-        ]
-        assert len(insert_calls) == 2
+        # 只保留 2 条 M1 相关消息，所以 execute_batch 应被调用一次
+        mock_mysql_storage.execute_batch.assert_called_once()
+        batch_args = mock_mysql_storage.execute_batch.call_args
+        sql = batch_args[0][0]
+        params = batch_args[0][1]
+        assert "INSERT INTO dqm_security_info_snapshot" in sql
+        assert len(params) == 2
 
         # 验证 _pulsar_failed 标记为 False
         assert checker._pulsar_failed is False
@@ -468,12 +469,8 @@ class TestPrepare:
 
         checker._prepare(*check_params)
 
-        # 快照保存时，records 为空不应执行 INSERT
-        insert_calls = [
-            c for c in mock_mysql_storage.execute_update.call_args_list
-            if "INSERT INTO dqm_security_info_snapshot" in c[0][0]
-        ]
-        assert len(insert_calls) == 0
+        # 快照保存时，records 为空不应执行 INSERT（execute_batch 不应被调用）
+        mock_mysql_storage.execute_batch.assert_not_called()
 
 
 # ---------------------------------------------------------------------------

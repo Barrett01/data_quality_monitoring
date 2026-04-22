@@ -24,7 +24,16 @@ class BaseChecker(ABC):
             self._alert(check_date, check_time, check_round, result)
         except Exception as e:
             log.critical(f"检查异常: {e}")
+            # 将异常记录为 ERROR 状态到数据库
+            try:
+                self._record_error(check_date, check_time, check_round, str(e))
+            except Exception as record_err:
+                log.critical(f"记录ERROR状态失败: {record_err}")
             raise
+
+    def _record_error(self, check_date: date, check_time: datetime, check_round: int, error_msg: str):
+        """异常时记录 ERROR 状态到 dqm_check_result。子类必须实现此方法。"""
+        raise NotImplementedError("子类必须实现 _record_error 方法以支持异常状态记录")
 
     @abstractmethod
     def _prepare(self, check_date: date, check_time: datetime, check_round: int):

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import threading
+
 import pymysql
 from pymysql.cursors import DictCursor
 
@@ -12,19 +14,32 @@ logger = get_logger("SYSTEM", "MySQL")
 
 
 class MySQLStorage:
-    """MySQL 存储层，提供连接管理和基础 SQL 执行。"""
+    """MySQL 存储层，提供连接管理和基础 SQL 执行。
+
+    使用 threading.local 实现线程安全的连接管理，
+    每个 APScheduler 工作线程拥有独立的数据库连接。
+    """
 
     def __init__(self):
-        self._connection = None
+        self._local = threading.local()
 
     def _get_connection(self):
-        """获取 MySQL 连接，带重试。"""
-        if self._connection and self._connection.open:
-            return self._connection
+        """获取当前线程的 MySQL 连接，带健康检查和重试。"""
+        conn = getattr(self._local, "connection", None)
 
+        # 健康检查：ping 检测连接是否存活
+        if conn and conn.open:
+            try:
+                conn.ping(reconnect=True)
+                return conn
+            except pymysql.Error:
+                logger.warning("MySQL 连接 ping 失败，将重新创建连接")
+                conn = None
+
+        # 创建新连接，带重试
         for attempt in range(3):
             try:
-                self._connection = pymysql.connect(
+                conn = pymysql.connect(
                     host=MYSQL_HOST,
                     port=MYSQL_PORT,
                     user=MYSQL_USER,
@@ -33,7 +48,8 @@ class MySQLStorage:
                     charset=MYSQL_CHARSET,
                     cursorclass=DictCursor,
                 )
-                return self._connection
+                self._local.connection = conn
+                return conn
             except pymysql.Error as e:
                 logger.warning(f"MySQL 连接失败(第{attempt + 1}次): {e}")
                 if attempt == 2:
@@ -56,8 +72,20 @@ class MySQLStorage:
             conn.commit()
             return affected
 
+    def execute_batch(self, sql: str, params: list[tuple]) -> int:
+        """批量执行更新/插入/删除，使用 executemany 提升性能。"""
+        if not params:
+            return 0
+        conn = self._get_connection()
+        with conn.cursor() as cursor:
+            affected = cursor.executemany(sql, params)
+            conn.commit()
+            return affected
+
     def close(self):
-        """关闭连接。"""
-        if self._connection and self._connection.open:
-            self._connection.close()
+        """关闭当前线程的连接。"""
+        conn = getattr(self._local, "connection", None)
+        if conn and conn.open:
+            conn.close()
+            self._local.connection = None
             logger.info("MySQL 连接已关闭")
