@@ -68,7 +68,7 @@
 ## 四、监控规则详细设计
 ## 4.1 监控项 M1：gmdb_plate_info 完整性检查
 ## 4.1.1 监控目标
-验证 mysql `gmdb_plate_info` 表中的 `stkcode`（板块代码）与 Pulsar topic `security_info` 中实时消息解码后得到的 `stkcode` 完全一致。
+验证 mysql `gmdb_plate_info` 表中的 `stkcode`（板块代码）与 Pulsar的topic `security_info` 中实时消息解码后得到的 `stkcode` 完全一致。
 
 ### 4.1.2 监控规则
 | 属性 | 值 |
@@ -104,7 +104,7 @@
 ## 4.2 监控项 M2：gmdb_plate_info 及时性检查
 ## 4.2.1 监控目标
 
-验证 MongoDB `gmdb_plate_info` 在每天盘前时段存在 `send_date = 当天日期` 的数据
+验证 MySQL表 `gmdb_plate_info` 在每天盘前时段存在 `send_date = 当天日期` 的数据
 
 #### 4.2.2 监控规则
 
@@ -154,7 +154,7 @@
 | `mst_type` | 是 | string | 枚举值：`INDUSTRY_PLATE_INFO` / `REGION_PLATE_INFO` / `HOTIDEA_PLATE_INFO` | 消息类型 |
 | `send_date` | 是 | string | 非空字符串，匹配正则 `^\d{4}-\d{2}-\d{2}$` 或 `^\d{8}$` | 发送日期 |
 | `send_time` | 否 | string | 字符串类型 | 发送时间 |
-| `sum` | 否 | number | 数值类型（int/float），≥ 0 | 成分股数量 |
+| `sum` | 否 | number | 数值类型（int/float），≥ 0 | 成分股数量 |  #如果线上表没有就不判断，有这判断这一情况；
 
 #### 4.3.5 过程数据存储
 
@@ -325,12 +325,12 @@
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
-| 订阅名 | `data-quality-monitor-sub` | 独立订阅，不与主业务共享 |
+| 订阅名 | `data-quality-monitor-sub` | 独立订阅 |
 | 订阅类型 | `Exclusive` | 排他模式，仅监控服务消费 |
 | 初始位置 | `Latest` | 不回溯历史，只消费最新消息 |
 | 接收超时 | `5000ms` | 每次轮询 5 秒 |
 | 采集窗口 | `30s` | 每个检查时间点监听 30 秒后关闭 |
-| Topic | `persistent://public/default/hidatapilot` | 同主业务 Topic |
+| Topic | `persistent://public/default/security_info` | 业务 Topic |
 
 ### 8.2 消息过滤与解码
 

@@ -1,4 +1,4 @@
-"""字段校验器：校验字段非空和值约束。"""
+"""字段校验器：校验字段非空和值约束。（未启用——当前 AccuracyChecker 使用内部校验逻辑）"""
 
 from __future__ import annotations
 

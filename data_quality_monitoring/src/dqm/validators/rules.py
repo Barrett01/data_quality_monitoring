@@ -1,4 +1,4 @@
-"""校验规则定义：定义各表的字段约束规则。"""
+"""校验规则定义：定义各表的字段约束规则。（未启用——当前 AccuracyChecker 使用内部字段定义，与 rules.py 可能存在不一致）"""
 
 from dataclasses import dataclass, field
 from typing import Any, List, Optional, Set

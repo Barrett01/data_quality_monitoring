@@ -48,36 +48,39 @@ class SnapshotRepository:
         self._storage = storage
 
     def save(self, check_date: date, check_round: int, records: list[dict]):
-        """保存快照数据（先删后插）。"""
-        # 先删除同一天同轮次的数据
-        self._storage.execute_update(
-            "DELETE FROM dqm_security_info_snapshot WHERE check_date = %s AND check_round = %s",
-            (check_date, check_round),
-        )
-        # 批量插入
-        if records:
-            sql = """
-            INSERT INTO dqm_security_info_snapshot
-            (check_date, check_round, check_time, stkcode, stkname, std_stkcode, mst_type,
-             compn_stock_code, compn_stock_name, index_name, send_date)
-            VALUES (%s, %s, NOW(), %s, %s, %s, %s, %s, %s, %s, %s)
-            """
-            params = [
-                (
-                    check_date,
-                    check_round,
-                    r.get("stkcode"),
-                    r.get("stkname"),
-                    r.get("std_stkcode"),
-                    r.get("mst_type"),
-                    r.get("compn_stock_code"),
-                    r.get("compn_stock_name"),
-                    r.get("index_name"),
-                    r.get("send_date"),
+        """保存快照数据（事务内先删后插，保证原子性）。"""
+        sql_insert = """
+        INSERT INTO dqm_security_info_snapshot
+        (check_date, check_round, check_time, stkcode, stkname, std_stkcode, mst_type,
+         compn_stock_code, compn_stock_name, index_name, send_date)
+        VALUES (%s, %s, NOW(), %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        insert_params = [
+            (
+                check_date,
+                check_round,
+                r.get("stkcode"),
+                r.get("stkname"),
+                r.get("std_stkcode"),
+                r.get("mst_type"),
+                r.get("compn_stock_code"),
+                r.get("compn_stock_name"),
+                r.get("index_name"),
+                r.get("send_date"),
+            )
+            for r in records
+        ]
+
+        def _tx(conn):
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "DELETE FROM dqm_security_info_snapshot WHERE check_date = %s AND check_round = %s",
+                    (check_date, check_round),
                 )
-                for r in records
-            ]
-            self._storage.execute_batch(sql, params)
+                if insert_params:
+                    cursor.executemany(sql_insert, insert_params)
+
+        self._storage.execute_in_transaction(_tx)
 
     def get_by_date(self, check_date: date, check_round: int | None = None) -> list[dict]:
         """查询快照数据。"""
@@ -101,14 +104,12 @@ class AccuracyDetailRepository:
         self._storage = storage
 
     def save_batch(self, check_date: date, check_round: int, monitor_id: str, details: list[dict]):
-        """批量保存准确性明细。"""
-        if not details:
-            return
-        sql = """
+        """批量保存准确性明细（事务内先删后插，保证原子性和幂等性）。"""
+        sql_insert = """
         INSERT INTO dqm_accuracy_detail (check_date, check_round, monitor_id, record_key, field_name, error_type, error_value)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        params = [
+        insert_params = [
             (
                 check_date,
                 check_round,
@@ -120,7 +121,17 @@ class AccuracyDetailRepository:
             )
             for d in details
         ]
-        self._storage.execute_batch(sql, params)
+
+        def _tx(conn):
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "DELETE FROM dqm_accuracy_detail WHERE check_date = %s AND check_round = %s AND monitor_id = %s",
+                    (check_date, check_round, monitor_id),
+                )
+                if insert_params:
+                    cursor.executemany(sql_insert, insert_params)
+
+        self._storage.execute_in_transaction(_tx)
 
     def cleanup(self, retention_days: int) -> int:
         """清理过期明细。"""

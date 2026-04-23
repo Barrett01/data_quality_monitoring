@@ -14,114 +14,111 @@ json	Python 内置	消息体解码
 
 ## 项目结构
 
-data-quality-monitor/
+数据质量监控系统 - 目录结构图
+
+📁 data_quality_monitoring/
 │
-├── README.md                          # 项目说明文档
-├── requirements.txt                   # Python 依赖
-├── pyproject.toml                     # 项目配置(可选,用于打包)
-├── .env.example                       # 环境变量示例
-├── .gitignore                         # Git 忽略文件
+├── scripts/                          # 命令行脚本
+│   ├── start.py                     # 服务启动脚本
+│   ├── stop.py                      # 服务停止脚本
+│   ├── status.py                    # 服务状态查询
+│   ├── init_db.py                   # 数据库初始化脚本
+│   └── manual_check.py              # 手动检查脚本
 │
-├── config/                            # 配置文件目录
-│   ├── __init__.py
-│   ├── settings.py                    # Pydantic 配置类
-│   ├── constants.py                   # 常量定义
-│   └── logger_config.py               # 日志配置
+├── config/                          # 配置文件
+│   ├── __init__.py                  # 模块初始化
+│   ├── settings.py                  # 环境变量配置
+│   ├── logger_config.py             # 日志配置
+│   ├── constants.py                 # 常量定义
+│   ├── monitor_configs.py           # 监控项配置
+│   ├── schema.py                   # 数据库表结构
+│   └── .env                        # 环境变量文件
 │
-├── src/                               # 源代码目录
-│   └── dqm/                           # Data Quality Monitor 包
-│       ├── __init__.py
-│       │
-│       ├── core/                      # 核心模块
-│       │   ├── __init__.py
-│       │   ├── scheduler.py           # 调度引擎
-│       │   ├── coordinator.py         # 检查协调器
-│       │   └── runner.py              # 运行入口
-│       │
-│       ├── checkers/                  # 检查器模块
-│       │   ├── __init__.py
-│       │   ├── base.py                # 检查器抽象基类
-│       │   ├── completeness.py        # 完整性检查器
-│       │   ├── timeliness.py          # 及时性检查器
-│       │   └── accuracy.py            # 准确性检查器
-│       │
-│       ├── collectors/                # 数据采集模块
-│       │   ├── __init__.py
-│       │   ├── base.py                # 采集器基类
-│       │   ├── mongo_collector.py    # MongoDB l
-│       │   ├── pulsar_collector.py   # Pulsar 消息采集
-│       │   └── snapshot.py            # 快照管理器
-│       │
-│       ├── validators/                # 校验器模块
-│       │   ├── __init__.py
-│       │   ├── field_validator.py    # 字段校验器
-│       │   ├── type_validator.py     # 类型校验器
-│       │   └── rules.py              # 校验规则定义
-│       │
-│       ├── storage/                   # 存储模块
-│       │   ├── __init__.py
-│       │   ├── base.py                # 存储基类
-│       │   ├── mysql_storage.py      # MySQL 存储实现
-│       │   ├── schema.py              # 数据库表定义
-│       │   └── repository.py          # 数据访问层
-│       │
-│       ├── models/                    # 数据模型
-│       │   ├── __init__.py
-│       │   ├── check_result.py       # 检查结果模型
-│       │   ├── snapshot.py           # 快照数据模型
-│       │   ├── field_error.py        # 字段错误模型
-│       │   └── config.py             # 监控配置模型
-│       │
-│       ├── alerts/                    # 告警模块
-│       │   ├── __init__.py
-│       │   ├── formatter.py          # 告警格式化
-│       │   └── logger.py             # 告警日志输出
-│       │
-│       ├── cleanup/                   # 清理模块
-│       │   ├── __init__.py
-│       │   ├── cleaner.py            # 过期数据清理器
-│       │   └── scheduler.py          # 清理调度器
-│       │
-│       ├── utils/                     # 工具模块
-│       │   ├── __init__.py
-│       │   ├── date_utils.py         # 日期工具
-│       │   ├── mongo_utils.py        # MongoDB 工具
-│       │   ├── pulsar_utils.py       # Pulsar 工具
-│       │   └── mysql_utils.py        # MySQL 工具
-│       │
-│       └── config/                    # 监控配置目录
-│           ├── __init__.py
-│           └── monitor_configs.py    # 各监控项配置
+├── src/dqm/                        # 主业务代码
+│   ├── __init__.py                 # 模块初始化
+│   │
+│   ├── core/                       # 核心调度层
+│   │   ├── __init__.py             # 模块初始化
+│   │   ├── scheduler.py            # 定时任务调度器
+│   │   ├── coordinator.py          # 协调器
+│   │   └── runner.py               # 应用入口
+│   │
+│   ├── checkers/                   # 数据质量检查器
+│   │   ├── __init__.py             # 模块初始化
+│   │   ├── base.py                 # 检查器基类
+│   │   ├── completeness.py         # 完整性检查器
+│   │   ├── timeliness.py           # 及时性检查器
+│   │   └── accuracy.py             # 准确性检查器
+│   │
+│   ├── storage/                    # 数据存储层
+│   │   ├── __init__.py             # 模块初始化
+│   │   ├── mysql_storage.py        # MySQL 存储封装
+│   │   ├── repository.py           # 数据访问对象
+│   │   └── schema.py              # 数据库表结构
+│   │
+│   ├── collectors/                  # 数据采集器
+│   │   ├── __init__.py             # 模块初始化
+│   │   ├── mongo_collector.py      # MongoDB 采集器
+│   │   └── pulsar_collector.py    # Pulsar 采集器
+│   │
+│   ├── validators/                  # 数据校验器
+│   │   ├── __init__.py             # 模块初始化
+│   │   ├── field_validator.py      # 字段校验器
+│   │   └── rules.py               # 规则引擎
+│   │
+│   ├── alerts/                     # 告警模块
+│   │   ├── __init__.py             # 模块初始化
+│   │   └── formatter.py           # 告警格式化器
+│   │
+│   ├── cleanup/                     # 数据清理模块
+│   │   ├── __init__.py             # 模块初始化
+│   │   └── cleaner.py             # 数据清理器
+│   │
+│   └── utils/                      # 工具函数
+│       ├── __init__.py             # 模块初始化
+│       └── helpers.py              # 辅助函数
 │
-├── scripts/                           # 脚本目录
-│   ├── start.py                       # 服务启动脚本
-│   ├── stop.py                        # 服务停止脚本
-│   ├── status.py                      # 服务状态查询
-│   ├── init_db.py                     # 数据库初始化脚本
-│   └── manual_check.py                # 手动执行检查脚本
+├── tests/                          # 测试目录
+│   ├── __init__.py                 # 模块初始化
+│   │
+│   ├── unit/                       # 单元测试
+│   │   ├── __init__.py             # 模块初始化
+│   │   ├── test_checkers/          # 检查器测试
+│   │   ├── test_collectors/        # 采集器测试
+│   │   │
+│   │   ├── test_validators/        # 校验器测试
+│   │   │
+│   │   ├── test_storage/           # 存储测试
+│   │   │
+│   │   └── test_core/              # 核心层测试
+│   │
+│   └── integration/                 # 集成测试
+│       ├── __init__.py             # 模块初始化
+│       ├── test_scheduler.py       # 调度器集成测试
+│       ├── test_e2e.py             # 端到端测试
+│       └── fixtures/               # 测试数据
+│           ├── __init__.py        # 模块初始化
+│           ├── sample_data.json
+│           └── test_db_setup.sql
 │
-├── tests/                             # 测试目录
-│   ├── __init__.py
-│   ├── conftest.py                    # pytest 配置
-│   ├── unit/                          # 单元测试
-│   │   ├── test_checkers/
-│   │   ├── test_collectors/
-│   │   ├── test_validators/
-│   │   └── test_storage/
-│   └── integration/                    # 集成测试
-│       ├── test_scheduler.py
-│       └── test_e2e.py
+├── data/                          # 数据目录
+│   ├── logs/                      # 日志文件
+│   │   ├── dqm.log               # 主日志
+│   │   ├── dqm_error.log         # 错误日志
+│   │   └── dqm_alert.log         # 告警日志
+│   ├── snapshots/                 # 快照数据
+│   └── temp/                      # 临时文件
 │
-├── docs/                              # 文档目录
-│   ├── architecture.md               # 架构设计文档
-│   ├── api.md                         # API 文档
-│   ├── deployment.md                  # 部署文档
-│   └── troubleshooting.md             # 故障排查文档
+├── docs/                          # 文档目录
+│   ├── api.md                    # API 文档
+│   ├── architecture.md           # 架构说明
+│   ├── deployment.md             # 部署文档
+│   └── examples/                 # 示例代码
 │
-├── logs/                              # 日志目录(运行时生成)
-│   ├── dqm.log                        # 主日志
-│   ├── dqm_error.log                  # 错误日志
-│   └── dqm_alert.log                  # 告警日志
+├── requirements.txt              # Python 依赖
+├── setup.py                      # 安装脚本
+└── README.md                     # 项目说明
+
 
 
 

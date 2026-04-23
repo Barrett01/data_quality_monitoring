@@ -82,6 +82,28 @@ class MySQLStorage:
             conn.commit()
             return affected
 
+    def execute_in_transaction(self, callback) -> any:
+        """在同一个事务中执行多步数据库操作，保证原子性。
+
+        Args:
+            callback: 接收 connection 对象的可调用对象，
+                      在回调中通过 cursor 执行 SQL，无需手动 commit/rollback。
+
+        Returns:
+            callback 的返回值。
+
+        Raises:
+            callback 中抛出的任何异常都会触发 rollback。
+        """
+        conn = self._get_connection()
+        try:
+            result = callback(conn)
+            conn.commit()
+            return result
+        except Exception:
+            conn.rollback()
+            raise
+
     def close(self):
         """关闭当前线程的连接。"""
         conn = getattr(self._local, "connection", None)

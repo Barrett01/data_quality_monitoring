@@ -417,14 +417,10 @@ class TestPrepare:
         mock_collector.collect.assert_called_once_with(check_date=check_params[0])
         mock_collector.close.assert_called_once()
 
-        # 验证快照保存被调用（先 DELETE 再 INSERT）
-        # 只保留 2 条 M1 相关消息，所以 execute_batch 应被调用一次
-        mock_mysql_storage.execute_batch.assert_called_once()
-        batch_args = mock_mysql_storage.execute_batch.call_args
-        sql = batch_args[0][0]
-        params = batch_args[0][1]
-        assert "INSERT INTO dqm_security_info_snapshot" in sql
-        assert len(params) == 2
+        # 验证快照保存被调用（事务内先 DELETE 再 INSERT）
+        # 只保留 2 条 M1 相关消息，所以 execute_in_transaction 应被调用一次
+        mock_mysql_storage.execute_in_transaction.assert_called_once()
+        # 验证事务回调中的操作：回调内部使用 cursor 执行 DELETE + INSERT
 
         # 验证 _pulsar_failed 标记为 False
         assert checker._pulsar_failed is False

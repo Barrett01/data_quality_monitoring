@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `dqm_accuracy_detail` (
     `error_type` VARCHAR(30) NOT NULL COMMENT 'NULL_VALUE/TYPE_MISMATCH/ENUM_INVALID/REGEX_MISMATCH',
     `error_value` TEXT DEFAULT NULL COMMENT '异常值',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `uk_detail` (`check_date`, `check_round`, `monitor_id`, `record_key`, `field_name`),
     INDEX `idx_check_date` (`check_date`),
     INDEX `idx_monitor_id` (`monitor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='数据质量监控-准确性明细表';

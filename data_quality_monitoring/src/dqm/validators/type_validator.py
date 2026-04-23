@@ -1,4 +1,4 @@
-"""类型校验器：校验字段数据类型。"""
+"""类型校验器：校验字段数据类型。（未启用——当前 AccuracyChecker 使用内部校验逻辑）"""
 
 from __future__ import annotations
 
