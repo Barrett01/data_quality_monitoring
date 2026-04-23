@@ -1,4 +1,9 @@
-"""完整性检查器：比对线上表与临时快照的核心代码集合。"""
+"""完整性检查器：比对线上表与临时快照的核心代码集合。
+
+采集策略：Pulsar 采集当天全量消息写入快照表，M1/M4 共用同一份快照数据。
+快照共享：按 check_date 去重——同一天只需采集一次，M1/M4 各轮检查复用同一批快照。
+比对逻辑：线上表查询也限定当天数据（send_date = today），确保两边数据范围一致。
+"""
 
 from __future__ import annotations
 
@@ -27,6 +32,11 @@ class CompletenessChecker(BaseChecker):
     M1: gmdb_plate_info 的 stkcode vs Pulsar 快照的 stkcode（全局比对）
     M4: ads_fin_index_compn_stock_interface_ds 的 compn_stock_code vs Pulsar 快照的 compn_stock_code
         （按 stkcode 分组比对）
+
+    快照采集策略：
+    - Pulsar 采集当天全量消息（从 Earliest 开始，空闲超时后停止）
+    - 采集结果一次性写入快照表，M1 和 M4 共用同一份快照
+    - 快照按 check_date 标识，同一天只需采集一次，各轮检查复用已有快照
     """
 
     def __init__(
@@ -44,10 +54,34 @@ class CompletenessChecker(BaseChecker):
         self._mysql_storage = mysql_storage
         self._check_result_repo = CheckResultRepository(mysql_storage)
         self._snapshot_repo = SnapshotRepository(mysql_storage)
+        # Pulsar 采集状态，在 _prepare 中更新
+        self._pulsar_failed = False
+        self._pulsar_error = ""
+
+    @staticmethod
+    def _date_to_send_date(check_date: date) -> int:
+        """将 date 转换为数据库中的 send_date 格式（YYYYMMDD 整数）。"""
+        return int(check_date.strftime("%Y%m%d"))
 
     def _prepare(self, check_date: date, check_time: datetime, check_round: int):
-        """采集 Pulsar 快照数据并写入 MySQL 临时表。"""
+        """采集 Pulsar 快照数据并写入 MySQL 临时表。
+
+        采集当天全量消息，写入快照表供 M1/M4 共同使用。
+        快照按 check_date 共享：同一天只需采集一次，M1/M4 各轮检查复用同一批快照。
+        如果当天已有快照数据（由任意监控项先写入），则跳过采集，直接复用。
+        """
         log = get_logger(self.monitor_id, self.dimension)
+
+        # 检查当天是否已有快照（M1/M4 共用，先执行的一方已采集则跳过）
+        existing = self._snapshot_repo.get_by_date(check_date)
+        if existing:
+            log.info(
+                f"当天快照已存在，跳过采集 | check_date={check_date}, "
+                f"existing_count={len(existing)}"
+            )
+            self._pulsar_failed = False
+            self._pulsar_error = ""
+            return
 
         # 每次检查前清理过期快照（保留 15 天）
         try:
@@ -57,7 +91,7 @@ class CompletenessChecker(BaseChecker):
         except Exception as e:
             log.warning(f"清理过期快照数据失败 | error={e}")
 
-        log.info(f"开始采集 Pulsar 快照 | check_date={check_date}, check_round={check_round}")
+        log.info(f"开始采集 Pulsar 快照（当天全量消息） | check_date={check_date}, check_round={check_round}")
 
         pulsar_collector = PulsarCollector()
         messages = []
@@ -87,7 +121,7 @@ class CompletenessChecker(BaseChecker):
             f"Pulsar 快照采集完成 | received={len(messages)}, filtered={len(filtered)}"
         )
 
-        # 写入临时快照表
+        # 写入临时快照表（供 M1/M4 共用）
         self._snapshot_repo.save(check_date, check_round, filtered)
         self._pulsar_failed = False
         self._pulsar_error = ""
@@ -116,7 +150,7 @@ class CompletenessChecker(BaseChecker):
         log = get_logger(self.monitor_id, self.dimension)
 
         # 如果 Pulsar 采集失败，返回 SKIP
-        if getattr(self, "_pulsar_failed", False):
+        if self._pulsar_failed:
             return {
                 "status": CheckResult.SKIP,
                 "missing": [],
@@ -233,13 +267,15 @@ class CompletenessChecker(BaseChecker):
         }
 
     def _query_online_grouped_keys(self, check_date: date) -> dict[str, list[str]]:
-        """从线上表查询按 group_field 分组的 key_field 集合。"""
+        """从线上表查询按 group_field 分组的 key_field 集合（仅当天数据）。"""
+        send_date_val = self._date_to_send_date(check_date)
         sql = (
             f"SELECT `{self.group_field}`, `{self.key_field}` FROM `{self.table}` "
-            f"WHERE `{self.group_field}` IS NOT NULL AND `{self.key_field}` IS NOT NULL"
+            f"WHERE send_date = %s "
+            f"AND `{self.group_field}` IS NOT NULL AND `{self.key_field}` IS NOT NULL"
         )
         try:
-            rows = self._mysql_storage.execute_query(sql)
+            rows = self._mysql_storage.execute_query(sql, (send_date_val,))
         except Exception as e:
             log = get_logger(self.monitor_id, self.dimension)
             log.critical(f"MySQL 查询线上表失败 | table={self.table}, error={e}")
@@ -255,13 +291,13 @@ class CompletenessChecker(BaseChecker):
         return {k: list(set(v)) for k, v in grouped.items()}
 
     def _query_snapshot_grouped_keys(self, check_date: date, check_round: int) -> dict[str, list[str]]:
-        """从快照表查询按 group_field 分组的 key_field 集合。"""
+        """从快照表查询按 group_field 分组的 key_field 集合（按 check_date 查询，不限 round）。"""
         sql = (
             f"SELECT `{self.group_field}`, `{self.key_field}` FROM `dqm_security_info_snapshot` "
-            f"WHERE check_date = %s AND check_round = %s "
+            f"WHERE check_date = %s "
             f"AND `{self.group_field}` IS NOT NULL AND `{self.key_field}` IS NOT NULL"
         )
-        rows = self._mysql_storage.execute_query(sql, (check_date, check_round))
+        rows = self._mysql_storage.execute_query(sql, (check_date,))
 
         grouped: dict[str, list[str]] = {}
         for row in rows:
@@ -272,10 +308,11 @@ class CompletenessChecker(BaseChecker):
         return {k: list(set(v)) for k, v in grouped.items()}
 
     def _query_online_keys(self, check_date: date) -> list[str]:
-        """从 MySQL 线上表查询 key_field 集合。"""
-        sql = f"SELECT DISTINCT `{self.key_field}` FROM `{self.table}`"
+        """从 MySQL 线上表查询 key_field 集合（仅当天数据）。"""
+        send_date_val = self._date_to_send_date(check_date)
+        sql = f"SELECT DISTINCT `{self.key_field}` FROM `{self.table}` WHERE send_date = %s"
         try:
-            rows = self._mysql_storage.execute_query(sql)
+            rows = self._mysql_storage.execute_query(sql, (send_date_val,))
             return [row[self.key_field] for row in rows if row.get(self.key_field)]
         except Exception as e:
             log = get_logger(self.monitor_id, self.dimension)
@@ -283,12 +320,12 @@ class CompletenessChecker(BaseChecker):
             raise
 
     def _query_snapshot_keys(self, check_date: date, check_round: int) -> list[str]:
-        """从临时快照表查询 key_field 集合。"""
+        """从临时快照表查询 key_field 集合（按 check_date 查询，不限 round）。"""
         sql = (
             f"SELECT DISTINCT `{self.key_field}` FROM `dqm_security_info_snapshot` "
-            f"WHERE check_date = %s AND check_round = %s"
+            f"WHERE check_date = %s"
         )
-        rows = self._mysql_storage.execute_query(sql, (check_date, check_round))
+        rows = self._mysql_storage.execute_query(sql, (check_date,))
         return [row[self.key_field] for row in rows if row.get(self.key_field)]
 
     def _record(self, check_date: date, check_time: datetime, check_round: int, result: dict):

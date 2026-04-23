@@ -86,7 +86,7 @@
 
 ```
 1. 在监控时间窗口内，监听 Pulsar topic: persistent://public/default/security_info
-2. 使用独立 Consumer（非共享订阅，避免影响主消费流程），订阅名：data-quality-monitor-sub
+2. 使用独立 Consumer（共享订阅，避免影响主消费流程），订阅名：data-quality-monitor-sub
 3. 接收消息后，将消息体写入临时文件 解码 JSON 消息体，提取 stkcode 字段
 5. 将 {check_date, check_time, stkcode, stkname, mst_type...} 写入 MySQL 临时表 dqm_security_info_snapshot
 ```
@@ -326,7 +326,7 @@
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
 | 订阅名 | `data-quality-monitor-sub` | 独立订阅 |
-| 订阅类型 | `Exclusive` | 排他模式，仅监控服务消费 |
+| 订阅类型 | `Shared` | 共享模式，支持多实例部署和故障切换 |
 | 初始位置 | `Latest` | 不回溯历史，只消费最新消息 |
 | 接收超时 | `5000ms` | 每次轮询 5 秒 |
 | 采集窗口 | `30s` | 每个检查时间点监听 30 秒后关闭 |

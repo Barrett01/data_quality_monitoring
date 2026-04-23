@@ -107,7 +107,7 @@ def insert_snapshot(db_conn, check_date: date, check_round: int, stkcode: str, m
         "INSERT INTO dqm_security_info_snapshot "
         "(check_date, check_round, check_time, stkcode, stkname, std_stkcode, mst_type, compn_stock_code, compn_stock_name, index_name, send_date) "
         "VALUES (%s, %s, NOW(), %s, %s, %s, %s, %s, %s, %s, %s)",
-        (check_date, check_round, stkcode, f"板块{stkcode}", f"{stkcode}.SH", mst_type, None, None, None, None),
+        (check_date, check_round, stkcode, f"板块{stkcode}", f"{stkcode}.SH", mst_type, "", "", "", ""),
     )
     cur.close()
 

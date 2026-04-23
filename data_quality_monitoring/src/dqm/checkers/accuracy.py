@@ -74,8 +74,8 @@ GMDB_PLATE_INFO_FIELDS = [
     {
         "name": "send_date",
         "required": True,
-        "type": "string",
-        "regex": r"^(\d{4}-\d{2}-\d{2}|\d{8})$",
+        "type": "number",
+        "regex": r"^\d{8}$",
         "enum": None,
     },
     {
@@ -127,8 +127,8 @@ ADS_FIN_INDEX_FIELDS = [
     {
         "name": "send_date",
         "required": True,
-        "type": "string",
-        "regex": r"^(\d{4}-\d{2}-\d{2}|\d{8})$",
+        "type": "number",
+        "regex": r"^\d{8}$",
         "enum": None,
     },
     {

@@ -399,7 +399,7 @@ class TestPrepare:
 
     @patch("src.dqm.checkers.completeness.PulsarCollector")
     def test_prepare_success(self, mock_collector_cls, checker, mock_mysql_storage, check_params):
-        """正常采集流程：创建采集器 → 采集 → 过滤 → 保存快照。"""
+        """正常采集流程：无已有快照 → 创建采集器 → 采集 → 过滤 → 保存快照。"""
         mock_collector = MagicMock()
         mock_collector_cls.return_value = mock_collector
 
@@ -410,6 +410,10 @@ class TestPrepare:
         ]
         mock_collector.collect.return_value = raw_messages
 
+        # 模拟快照不存在（get_by_date 返回空列表）和清理返回 0
+        mock_mysql_storage.execute_query.return_value = []
+        mock_mysql_storage.execute_update.return_value = 0
+
         checker._prepare(*check_params)
 
         # 验证采集器被创建和关闭
@@ -417,21 +421,22 @@ class TestPrepare:
         mock_collector.collect.assert_called_once_with(check_date=check_params[0])
         mock_collector.close.assert_called_once()
 
-        # 验证快照保存被调用（事务内先 DELETE 再 INSERT）
-        # 只保留 2 条 M1 相关消息，所以 execute_in_transaction 应被调用一次
-        mock_mysql_storage.execute_in_transaction.assert_called_once()
-        # 验证事务回调中的操作：回调内部使用 cursor 执行 DELETE + INSERT
+        # 验证快照保存被调用（INSERT IGNORE 写入）
+        mock_mysql_storage.execute_batch.assert_called_once()
 
         # 验证 _pulsar_failed 标记为 False
         assert checker._pulsar_failed is False
 
     @patch("src.dqm.checkers.completeness.PulsarCollector")
     @patch("src.dqm.checkers.completeness.time")
-    def test_prepare_pulsar_retry_and_fail(self, mock_time, mock_collector_cls, checker, check_params):
+    def test_prepare_pulsar_retry_and_fail(self, mock_time, mock_collector_cls, checker, mock_mysql_storage, check_params):
         """Pulsar 连接重试全部失败后设置 _pulsar_failed=True。"""
         mock_collector = MagicMock()
         mock_collector_cls.return_value = mock_collector
         mock_collector.collect.side_effect = Exception("Connection refused")
+
+        # 模拟快照不存在
+        mock_mysql_storage.execute_query.return_value = []
 
         checker._prepare(*check_params)
 
@@ -451,6 +456,10 @@ class TestPrepare:
             [{"mst_type": "INDUSTRY_PLATE_INFO", "stkcode": "BK0001"}],
         ]
 
+        # 模拟快照不存在
+        mock_mysql_storage.execute_query.return_value = []
+        mock_mysql_storage.execute_update.return_value = 0
+
         checker._prepare(*check_params)
 
         assert checker._pulsar_failed is False
@@ -463,10 +472,26 @@ class TestPrepare:
         mock_collector_cls.return_value = mock_collector
         mock_collector.collect.return_value = []
 
+        # 模拟快照不存在
+        mock_mysql_storage.execute_query.return_value = []
+        mock_mysql_storage.execute_update.return_value = 0
+
         checker._prepare(*check_params)
 
-        # 快照保存时，records 为空不应执行 INSERT（execute_batch 不应被调用）
+        # 快照保存时，records 为空不应执行 REPLACE INTO（execute_batch 不应被调用）
         mock_mysql_storage.execute_batch.assert_not_called()
+
+    def test_prepare_skips_when_snapshot_exists(self, checker, mock_mysql_storage, check_params):
+        """当天已有快照时跳过 Pulsar 采集（M1/M4 共用快照，按 check_date 共享）。"""
+        # 模拟快照已存在（get_by_date 返回非空列表）
+        mock_mysql_storage.execute_query.return_value = [{"stkcode": "BK0001", "stkname": "测试板块"}]
+
+        with patch("src.dqm.checkers.completeness.PulsarCollector") as mock_collector_cls:
+            checker._prepare(*check_params)
+            # PulsarCollector 不应被创建
+            mock_collector_cls.assert_not_called()
+
+        assert checker._pulsar_failed is False
 
 
 # ---------------------------------------------------------------------------
@@ -477,7 +502,7 @@ class TestQueryKeys:
     """数据库查询方法测试。"""
 
     def test_query_online_keys(self, checker, mock_mysql_storage, check_params):
-        """_query_online_keys 应查询线上表的 DISTINCT key_field。"""
+        """_query_online_keys 应查询线上表的 DISTINCT key_field（带 send_date 过滤）。"""
         mock_mysql_storage.execute_query.return_value = [
             {"stkcode": "BK0001"},
             {"stkcode": "BK0002"},
@@ -490,6 +515,10 @@ class TestQueryKeys:
         sql = mock_mysql_storage.execute_query.call_args[0][0]
         assert "SELECT DISTINCT `stkcode`" in sql
         assert "FROM `gmdb_plate_info`" in sql
+        assert "WHERE send_date = %s" in sql
+        # 验证 send_date 参数为 YYYYMMDD 整数格式
+        params = mock_mysql_storage.execute_query.call_args[0][1]
+        assert params[0] == 20260421
 
     def test_query_online_keys_filters_none(self, checker, mock_mysql_storage, check_params):
         """_query_online_keys 应过滤掉 None/空值。"""
@@ -512,7 +541,7 @@ class TestQueryKeys:
             checker._query_online_keys(check_params[0])
 
     def test_query_snapshot_keys(self, checker, mock_mysql_storage, check_params):
-        """_query_snapshot_keys 应查询快照表。"""
+        """_query_snapshot_keys 应查询快照表（按 check_date，不限 round）。"""
         mock_mysql_storage.execute_query.return_value = [
             {"stkcode": "BK0001"},
             {"stkcode": "BK0002"},
@@ -524,7 +553,8 @@ class TestQueryKeys:
         sql = mock_mysql_storage.execute_query.call_args[0][0]
         assert "dqm_security_info_snapshot" in sql
         assert "check_date" in sql
-        assert "check_round" in sql
+        # 按日期共享快照，不再过滤 check_round
+        assert "check_round" not in sql
 
     def test_query_snapshot_keys_filters_none(self, checker, mock_mysql_storage, check_params):
         """_query_snapshot_keys 应过滤掉 None/空值。"""

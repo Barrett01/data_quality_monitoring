@@ -173,26 +173,27 @@ class TestValidateField:
         assert error is None
 
     def test_send_date_format_yyyymmdd(self, checker):
-        """send_date 格式 YYYYMMDD → 通过。"""
-        row = {"send_date": "20260422"}
-        rule = {"name": "send_date", "required": True, "type": "string",
-                "regex": r"^(\d{4}-\d{2}-\d{2}|\d{8})$", "enum": None}
+        """send_date 格式 YYYYMMDD（整数）→ 通过。"""
+        row = {"send_date": 20260422}
+        rule = {"name": "send_date", "required": True, "type": "number",
+                "regex": r"^\d{8}$", "enum": None}
         error = checker._validate_field(row, rule, "000001")
         assert error is None
 
-    def test_send_date_format_dash(self, checker):
-        """send_date 格式 YYYY-MM-DD → 通过。"""
+    def test_send_date_format_dash_rejected(self, checker):
+        """send_date 格式 YYYY-MM-DD → 不合法（已统一为 YYYYMMDD 整数格式）。"""
         row = {"send_date": "2026-04-22"}
-        rule = {"name": "send_date", "required": True, "type": "string",
-                "regex": r"^(\d{4}-\d{2}-\d{2}|\d{8})$", "enum": None}
+        rule = {"name": "send_date", "required": True, "type": "number",
+                "regex": r"^\d{8}$", "enum": None}
         error = checker._validate_field(row, rule, "000001")
-        assert error is None
+        assert error is not None
+        assert error["error_type"] == "REGEX_MISMATCH"
 
     def test_send_date_format_invalid(self, checker):
         """send_date 格式非法 → REGEX_MISMATCH。"""
         row = {"send_date": "22/04/2026"}
-        rule = {"name": "send_date", "required": True, "type": "string",
-                "regex": r"^(\d{4}-\d{2}-\d{2}|\d{8})$", "enum": None}
+        rule = {"name": "send_date", "required": True, "type": "number",
+                "regex": r"^\d{8}$", "enum": None}
         error = checker._validate_field(row, rule, "000001")
         assert error is not None
         assert error["error_type"] == "REGEX_MISMATCH"

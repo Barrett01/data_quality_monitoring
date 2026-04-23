@@ -1,10 +1,14 @@
-"""MongoDB 数据采集器：查询线上表数据。"""
+"""MongoDB 数据采集器：查询线上表数据。
+
+暂不使用 — 当前线上表均在 MySQL 中，未来可能切换到 MongoDB 时启用。
+"""
 
 from __future__ import annotations
 
 from datetime import date
 
-from pymongo import MongoClient
+# NOTE: pymongo 暂未使用，保留依赖以备未来切换 MongoDB
+from pymongo import MongoClient  # noqa: F401
 
 from config.logger_config import get_logger
 from config.settings import MONGO_URI, MONGO_DATABASE
@@ -12,7 +16,12 @@ logger = get_logger("SYSTEM", "MongoDB")
 
 
 class MongoCollector:
-    """MongoDB 数据采集器"""
+    """MongoDB 数据采集器（暂不使用）
+
+    当前线上表均在 MySQL 中。若未来线上表迁移至 MongoDB，
+    需同步修改 CompletenessChecker / TimelinessChecker / AccuracyChecker
+    中的数据查询逻辑，将 MySQL 查询替换为 MongoCollector.collect()。
+    """
 
     def __init__(self):
         self._client: MongoClient | None = None

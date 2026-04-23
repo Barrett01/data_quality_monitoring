@@ -100,8 +100,18 @@ def m4_checker(mysql_storage):
 
 
 @pytest.fixture
-def check_params():
-    return date(2026, 4, 22), datetime(2026, 4, 22, 8, 42, 0), 1
+def check_params(db_conn, has_online_data):
+    """通用检查参数。根据线上表真实 send_date 动态生成。"""
+    if has_online_data:
+        cur = db_conn.cursor()
+        cur.execute(f"SELECT DISTINCT send_date FROM {ONLINE_TABLE} ORDER BY send_date DESC LIMIT 1")
+        send_date_val = cur.fetchone()[0]
+        cur.close()
+        sd_str = str(send_date_val)
+        check_date = date(int(sd_str[:4]), int(sd_str[4:6]), int(sd_str[6:8]))
+    else:
+        check_date = date(2026, 4, 22)
+    return check_date, datetime.combine(check_date, datetime.min.time()), 1
 
 
 @pytest.fixture(autouse=True)
@@ -115,6 +125,20 @@ def cleanup(db_conn):
     cur.execute("DELETE FROM dqm_check_result")
     cur.execute("DELETE FROM dqm_security_info_snapshot")
     cur.close()
+
+
+@pytest.fixture(scope="module")
+def has_online_data(db_conn):
+    """检查线上表是否有数据。"""
+    cur = db_conn.cursor()
+    try:
+        cur.execute(f"SELECT COUNT(*) FROM {ONLINE_TABLE}")
+        count = cur.fetchone()[0]
+        return count > 0
+    except Exception:
+        return False
+    finally:
+        cur.close()
 
 
 # ---------------------------------------------------------------------------
@@ -132,14 +156,14 @@ def insert_snapshot_records(db_conn, check_date: date, check_round: int, records
             (
                 check_date,
                 check_round,
-                r.get("stkcode"),
-                r.get("stkname"),
-                r.get("std_stkcode"),
-                r.get("mst_type", "PLATE_STOCKS"),
-                r.get("compn_stock_code"),
-                r.get("compn_stock_name"),
-                r.get("index_name"),
-                r.get("send_date"),
+                r.get("stkcode") or "",
+                r.get("stkname") or "",
+                r.get("std_stkcode") or "",
+                r.get("mst_type") or "PLATE_STOCKS",
+                r.get("compn_stock_code") or "",
+                r.get("compn_stock_name") or "",
+                r.get("index_name") or "",
+                r.get("send_date") or "",
             ),
         )
     cur.close()
@@ -161,16 +185,20 @@ def get_check_result(db_conn, check_date: date, monitor_id: str = "M4") -> dict 
 # ---------------------------------------------------------------------------
 
 class TestDatabaseSetup:
-    def test_ads_fin_table_exists(self, ensure_tables, db_conn):
+    def test_ads_fin_table_exists(self, ensure_tables, db_conn, has_online_data):
         """ads_fin_index_compn_stock_interface_ds 表存在。"""
+        if not has_online_data:
+            pytest.skip(f"{ONLINE_TABLE} 表无数据，跳过")
         cur = db_conn.cursor()
         cur.execute(f"SELECT COUNT(*) FROM {ONLINE_TABLE}")
         count = cur.fetchone()[0]
         assert count > 0
         cur.close()
 
-    def test_ads_fin_has_stkcode_and_compn_stock_code(self, ensure_tables, db_conn):
+    def test_ads_fin_has_stkcode_and_compn_stock_code(self, ensure_tables, db_conn, has_online_data):
         """表中应有 stkcode 和 compn_stock_code 数据。"""
+        if not has_online_data:
+            pytest.skip(f"{ONLINE_TABLE} 表无数据，跳过")
         cur = db_conn.cursor()
         cur.execute(
             f"SELECT DISTINCT stkcode FROM {ONLINE_TABLE} "
@@ -186,8 +214,10 @@ class TestDatabaseSetup:
 # ---------------------------------------------------------------------------
 
 class TestQueryOnlineGroupedKeys:
-    def test_returns_grouped_result(self, m4_checker, check_params):
+    def test_returns_grouped_result(self, m4_checker, check_params, has_online_data):
         """查询应返回按 stkcode 分组的 compn_stock_code。"""
+        if not has_online_data:
+            pytest.skip(f"{ONLINE_TABLE} 表无数据，跳过")
         result = m4_checker._query_online_grouped_keys(check_params[0])
         assert isinstance(result, dict)
         # 真实表应有数据
@@ -197,8 +227,10 @@ class TestQueryOnlineGroupedKeys:
             assert isinstance(codes, list)
             assert len(codes) > 0
 
-    def test_dedup_within_group(self, m4_checker, check_params):
+    def test_dedup_within_group(self, m4_checker, check_params, has_online_data):
         """每个分组内的 compn_stock_code 应去重。"""
+        if not has_online_data:
+            pytest.skip(f"{ONLINE_TABLE} 表无数据，跳过")
         result = m4_checker._query_online_grouped_keys(check_params[0])
         for group_key, codes in result.items():
             assert len(codes) == len(set(codes)), f"分组 {group_key} 内应无重复"
@@ -264,8 +296,10 @@ class TestCheckGroupedWithRealData:
         result = m4_checker._check(*check_params)
         assert result["status"] == CheckResult.NODATA
 
-    def test_check_pass_full_snapshot(self, m4_checker, check_params, db_conn):
+    def test_check_pass_full_snapshot(self, m4_checker, check_params, db_conn, has_online_data):
         """快照与线上表完全一致 → PASS。"""
+        if not has_online_data:
+            pytest.skip(f"{ONLINE_TABLE} 表无数据，跳过")
         # 查询线上表所有分组数据
         online_grouped = m4_checker._query_online_grouped_keys(check_params[0])
 
@@ -411,8 +445,10 @@ class TestRecordWithRealDB:
 # ---------------------------------------------------------------------------
 
 class TestExecuteEndToEnd:
-    def test_e2e_pass(self, m4_checker, check_params, db_conn):
+    def test_e2e_pass(self, m4_checker, check_params, db_conn, has_online_data):
         """端到端：快照与线上表一致 → PASS。"""
+        if not has_online_data:
+            pytest.skip(f"{ONLINE_TABLE} 表无数据，跳过")
         check_date, check_time, check_round = check_params
 
         # 查询线上表所有数据并写入快照
@@ -496,8 +532,10 @@ class TestExecuteEndToEnd:
 # ---------------------------------------------------------------------------
 
 class TestFullExecuteWithMockedPrepare:
-    def test_execute_full_pass(self, m4_checker, check_params, db_conn):
+    def test_execute_full_pass(self, m4_checker, check_params, db_conn, has_online_data):
         """完整 execute 流程：_prepare（mock）→ _check → _record → _alert → PASS。"""
+        if not has_online_data:
+            pytest.skip(f"{ONLINE_TABLE} 表无数据，跳过")
         check_date, check_time, check_round = check_params
 
         # 准备快照数据（与线上表一致）

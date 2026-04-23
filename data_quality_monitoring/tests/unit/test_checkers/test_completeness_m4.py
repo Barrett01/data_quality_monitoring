@@ -295,7 +295,7 @@ class TestQueryGroupedKeys:
     """分组查询方法测试。"""
 
     def test_query_online_grouped_keys(self, m4_checker, mock_mysql_storage, check_params):
-        """_query_online_grouped_keys 应返回按 group_field 分组的结果。"""
+        """_query_online_grouped_keys 应返回按 group_field 分组的结果（带 send_date 过滤）。"""
         mock_mysql_storage.execute_query.return_value = [
             {"stkcode": "0001.BK", "compn_stock_code": "SH600000"},
             {"stkcode": "0001.BK", "compn_stock_code": "SH600001"},
@@ -308,6 +308,11 @@ class TestQueryGroupedKeys:
         assert "0477.BK" in result
         assert set(result["0001.BK"]) == {"SH600000", "SH600001"}
         assert result["0477.BK"] == ["SZ000001"]
+        # 验证 SQL 带有 send_date 过滤
+        sql = mock_mysql_storage.execute_query.call_args[0][0]
+        assert "WHERE send_date = %s" in sql
+        params = mock_mysql_storage.execute_query.call_args[0][1]
+        assert params[0] == 20260422
 
     def test_query_online_grouped_keys_dedup(self, m4_checker, mock_mysql_storage, check_params):
         """_query_online_grouped_keys 应对每个分组内的值去重。"""
@@ -321,7 +326,7 @@ class TestQueryGroupedKeys:
         assert result["0001.BK"] == ["SH600000"]
 
     def test_query_snapshot_grouped_keys(self, m4_checker, mock_mysql_storage, check_params):
-        """_query_snapshot_grouped_keys 应返回按 group_field 分组的结果。"""
+        """_query_snapshot_grouped_keys 应返回按 group_field 分组的结果（按 check_date，不限 round）。"""
         mock_mysql_storage.execute_query.return_value = [
             {"stkcode": "0001.BK", "compn_stock_code": "SH600000"},
             {"stkcode": "0477.BK", "compn_stock_code": "SZ000001"},
@@ -334,6 +339,8 @@ class TestQueryGroupedKeys:
         sql = mock_mysql_storage.execute_query.call_args[0][0]
         assert "dqm_security_info_snapshot" in sql
         assert "check_date" in sql
+        # 按日期共享快照，不再过滤 check_round
+        assert "check_round" not in sql
 
     def test_query_online_grouped_keys_raises_on_error(self, m4_checker, mock_mysql_storage, check_params):
         """查询失败时应抛出异常。"""

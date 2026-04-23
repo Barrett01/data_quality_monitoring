@@ -113,9 +113,19 @@ def checker(mysql_storage):
 
 
 @pytest.fixture
-def check_params():
-    """通用检查参数。"""
-    return date(2026, 4, 21), datetime(2026, 4, 21, 9, 0, 0), 1
+def check_params(db_conn, has_gmdb_data):
+    """通用检查参数。根据线上表真实 send_date 动态生成。"""
+    if has_gmdb_data:
+        cur = db_conn.cursor()
+        cur.execute("SELECT DISTINCT send_date FROM gmdb_plate_info ORDER BY send_date DESC LIMIT 1")
+        send_date_val = cur.fetchone()[0]
+        cur.close()
+        # send_date 格式为 YYYYMMDD（int 或 str），转为 date
+        sd_str = str(send_date_val)
+        check_date = date(int(sd_str[:4]), int(sd_str[4:6]), int(sd_str[6:8]))
+    else:
+        check_date = date(2026, 4, 21)
+    return check_date, datetime.combine(check_date, datetime.min.time()), 1
 
 
 @pytest.fixture(autouse=True)
@@ -131,6 +141,16 @@ def cleanup_check_result(db_conn):
     cur.execute("DELETE FROM dqm_check_result")
     cur.execute("DELETE FROM dqm_security_info_snapshot")
     cur.close()
+
+
+@pytest.fixture(scope="module")
+def has_gmdb_data(db_conn):
+    """检查 gmdb_plate_info 是否有数据，用于 skip 标记。"""
+    cur = db_conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM gmdb_plate_info")
+    count = cur.fetchone()[0]
+    cur.close()
+    return count > 0
 
 
 # ---------------------------------------------------------------------------
@@ -149,14 +169,14 @@ def insert_snapshot_records(db_conn, check_date: date, check_round: int, records
             (
                 check_date,
                 check_round,
-                r.get("stkcode"),
-                r.get("stkname"),
-                r.get("std_stkcode"),
-                r.get("mst_type"),
-                r.get("compn_stock_code"),
-                r.get("compn_stock_name"),
-                r.get("index_name"),
-                r.get("send_date"),
+                r.get("stkcode") or "",
+                r.get("stkname") or "",
+                r.get("std_stkcode") or "",
+                r.get("mst_type") or "",
+                r.get("compn_stock_code") or "",
+                r.get("compn_stock_name") or "",
+                r.get("index_name") or "",
+                r.get("send_date") or "",
             ),
         )
     cur.close()
@@ -176,8 +196,10 @@ class TestDatabaseSetup:
         assert cur.fetchone()[0] == 1
         cur.close()
 
-    def test_gmdb_plate_info_exists(self, ensure_tables, db_conn):
+    def test_gmdb_plate_info_exists(self, ensure_tables, db_conn, has_gmdb_data):
         """验证 gmdb_plate_info 业务表存在且有数据。"""
+        if not has_gmdb_data:
+            pytest.skip("gmdb_plate_info 表无数据，跳过")
         cur = db_conn.cursor()
         cur.execute("SELECT COUNT(*) FROM gmdb_plate_info")
         count = cur.fetchone()[0]
@@ -193,8 +215,10 @@ class TestDatabaseSetup:
             assert cur.fetchone() is not None, f"{table} 表应存在"
         cur.close()
 
-    def test_gmdb_plate_info_stkcodes(self, ensure_tables, db_conn):
+    def test_gmdb_plate_info_stkcodes(self, ensure_tables, db_conn, has_gmdb_data):
         """查看 gmdb_plate_info 中的去重 stkcode 集合。"""
+        if not has_gmdb_data:
+            pytest.skip("gmdb_plate_info 表无数据，跳过")
         cur = db_conn.cursor()
         cur.execute("SELECT DISTINCT stkcode FROM gmdb_plate_info WHERE stkcode IS NOT NULL AND stkcode != ''")
         stkcodes = sorted([r[0] for r in cur.fetchall()])
@@ -210,16 +234,20 @@ class TestDatabaseSetup:
 class TestQueryOnlineKeys:
     """使用真实 MySQL 查询 gmdb_plate_info。"""
 
-    def test_query_returns_distinct_stkcodes(self, checker, check_params):
+    def test_query_returns_distinct_stkcodes(self, checker, check_params, has_gmdb_data):
         """查询应返回去重的 stkcode 列表。"""
+        if not has_gmdb_data:
+            pytest.skip("gmdb_plate_info 表无数据，跳过")
         result = checker._query_online_keys(check_params[0])
         assert isinstance(result, list)
         assert len(result) > 0
         # 验证无重复
         assert len(result) == len(set(result)), "返回的 stkcode 应去重"
 
-    def test_query_no_empty_values(self, checker, check_params):
+    def test_query_no_empty_values(self, checker, check_params, has_gmdb_data):
         """查询结果不应包含空值。"""
+        if not has_gmdb_data:
+            pytest.skip("gmdb_plate_info 表无数据，跳过")
         result = checker._query_online_keys(check_params[0])
         for stkcode in result:
             assert stkcode, "不应包含空值"
@@ -255,13 +283,15 @@ class TestQuerySnapshotKeys:
 class TestCheckWithRealData:
     """使用真实 MySQL 数据进行集合比对。"""
 
-    def test_check_fail_snapshot_subset_of_online(self, checker, check_params, db_conn):
+    def test_check_fail_snapshot_subset_of_online(self, checker, check_params, db_conn, has_gmdb_data):
         """场景：快照是线上表的子集 → FAIL, 有 extra。
 
         gmdb_plate_info 有 {'0424','0438','0439','0443','0447','0477'}
         快照只有 {'0438','0477'}
         → missing=[], extra={'0424','0439','0443','0447'}
         """
+        if not has_gmdb_data:
+            pytest.skip("gmdb_plate_info 表无数据，跳过")
         insert_snapshot_records(db_conn, check_params[0], check_params[2], [
             {"stkcode": "0477", "stkname": "酿酒行业", "mst_type": "INDUSTRY_PLATE_INFO"},
             {"stkcode": "0438", "stkname": "医药制造", "mst_type": "INDUSTRY_PLATE_INFO"},
@@ -292,8 +322,10 @@ class TestCheckWithRealData:
         result = checker._check(*check_params)
         assert result["status"] == CheckResult.NODATA
 
-    def test_check_pass_all_matched(self, checker, check_params, db_conn):
+    def test_check_pass_all_matched(self, checker, check_params, db_conn, has_gmdb_data):
         """场景：快照与线上表完全一致 → PASS。"""
+        if not has_gmdb_data:
+            pytest.skip("gmdb_plate_info 表无数据，跳过")
         # 查询线上表所有 stkcode
         cur = db_conn.cursor()
         cur.execute("SELECT DISTINCT stkcode FROM gmdb_plate_info WHERE stkcode IS NOT NULL AND stkcode != ''")
@@ -419,8 +451,10 @@ class TestRecordWithRealDB:
 class TestExecuteEndToEnd:
     """端到端测试：跳过 _prepare（Pulsar），手动准备快照数据后执行完整流程。"""
 
-    def test_e2e_pass(self, checker, check_params, db_conn):
+    def test_e2e_pass(self, checker, check_params, db_conn, has_gmdb_data):
         """端到端：快照与线上表一致 → 完整流程 PASS。"""
+        if not has_gmdb_data:
+            pytest.skip("gmdb_plate_info 表无数据，跳过")
         check_date, check_time, check_round = check_params
 
         # 手动插入与线上表一致的快照数据
@@ -456,8 +490,10 @@ class TestExecuteEndToEnd:
         assert row is not None
         assert row["result"] == "PASS"
 
-    def test_e2e_fail_with_missing_and_extra(self, checker, check_params, db_conn):
+    def test_e2e_fail_with_missing_and_extra(self, checker, check_params, db_conn, has_gmdb_data):
         """端到端：快照与线上表不一致 → FAIL，结果含 missing 和 extra。"""
+        if not has_gmdb_data:
+            pytest.skip("gmdb_plate_info 表无数据，跳过")
         check_date, check_time, check_round = check_params
 
         # 只插入部分快照 + 一个线上表不存在的代码
@@ -535,14 +571,14 @@ class TestRepositoryWithRealDB:
     """Repository 数据访问层真实数据库操作测试。"""
 
     def test_snapshot_save_and_query(self, mysql_storage, check_params, db_conn):
-        """SnapshotRepository.save 应先删后插，get_by_date 应能查到。"""
+        """SnapshotRepository.save 应 INSERT IGNORE 写入，get_by_date 应能查到。"""
         repo = SnapshotRepository(mysql_storage)
         check_date, _, check_round = check_params
 
         records = [
             {"stkcode": "0477", "stkname": "酿酒行业", "std_stkcode": "0477.BK",
-             "mst_type": "INDUSTRY_PLATE_INFO", "compn_stock_code": None,
-             "compn_stock_name": None, "index_name": None, "send_date": "20260417"},
+             "mst_type": "INDUSTRY_PLATE_INFO", "compn_stock_code": "",
+             "compn_stock_name": "", "index_name": "", "send_date": "20260417"},
         ]
         repo.save(check_date, check_round, records)
 
@@ -550,32 +586,50 @@ class TestRepositoryWithRealDB:
         assert len(rows) == 1
         assert rows[0]["stkcode"] == "0477"
 
-    def test_snapshot_save_overwrites(self, mysql_storage, check_params, db_conn):
-        """SnapshotRepository.save 应先删后插（幂等）。"""
+    def test_snapshot_save_idempotent(self, mysql_storage, check_params, db_conn):
+        """SnapshotRepository.save 使用 INSERT IGNORE，幂等写入不删除历史。"""
         repo = SnapshotRepository(mysql_storage)
         check_date, _, check_round = check_params
 
         records1 = [
             {"stkcode": "0477", "stkname": "酿酒行业", "std_stkcode": "0477.BK",
-             "mst_type": "INDUSTRY_PLATE_INFO", "compn_stock_code": None,
-             "compn_stock_name": None, "index_name": None, "send_date": "20260417"},
+             "mst_type": "INDUSTRY_PLATE_INFO", "compn_stock_code": "",
+             "compn_stock_name": "", "index_name": "", "send_date": "20260417"},
         ]
         repo.save(check_date, check_round, records1)
 
         records2 = [
             {"stkcode": "0438", "stkname": "医药制造", "std_stkcode": "0438.BK",
-             "mst_type": "INDUSTRY_PLATE_INFO", "compn_stock_code": None,
-             "compn_stock_name": None, "index_name": None, "send_date": "20260417"},
+             "mst_type": "INDUSTRY_PLATE_INFO", "compn_stock_code": "",
+             "compn_stock_name": "", "index_name": "", "send_date": "20260417"},
             {"stkcode": "0447", "stkname": "电子元件", "std_stkcode": "0447.BK",
-             "mst_type": "INDUSTRY_PLATE_INFO", "compn_stock_code": None,
-             "compn_stock_name": None, "index_name": None, "send_date": "20260417"},
+             "mst_type": "INDUSTRY_PLATE_INFO", "compn_stock_code": "",
+             "compn_stock_name": "", "index_name": "", "send_date": "20260417"},
         ]
         repo.save(check_date, check_round, records2)
 
-        rows = repo.get_by_date(check_date, check_round)
-        assert len(rows) == 2
+        # INSERT IGNORE: 第二次 save 不删除第一次的记录，只是忽略已存在的重复
+        rows = repo.get_by_date(check_date)
         stkcodes = sorted([r["stkcode"] for r in rows])
-        assert stkcodes == ["0438", "0447"]
+        assert "0477" in stkcodes, "INSERT IGNORE 不应删除历史数据"
+        assert "0438" in stkcodes
+        assert "0447" in stkcodes
+
+    def test_snapshot_save_ignore_duplicate(self, mysql_storage, check_params, db_conn):
+        """INSERT IGNORE 对同一唯一键重复写入应静默跳过。"""
+        repo = SnapshotRepository(mysql_storage)
+        check_date, _, check_round = check_params
+
+        records = [
+            {"stkcode": "0477", "stkname": "酿酒行业", "std_stkcode": "0477.BK",
+             "mst_type": "INDUSTRY_PLATE_INFO", "compn_stock_code": "",
+             "compn_stock_name": "", "index_name": "", "send_date": "20260417"},
+        ]
+        repo.save(check_date, check_round, records)
+        repo.save(check_date, check_round, records)  # 重复写入
+
+        rows = repo.get_by_date(check_date, check_round)
+        assert len(rows) == 1, "INSERT IGNORE 重复写入不应产生重复记录"
 
     def test_check_result_upsert_and_query(self, mysql_storage, check_params):
         """CheckResultRepository.upsert 应能插入和覆盖。"""
@@ -617,8 +671,10 @@ class TestRepositoryWithRealDB:
 class TestFullExecuteWithMockedPrepare:
     """使用 mock _prepare 跳过 Pulsar 采集，测试完整的 execute 模板方法流程。"""
 
-    def test_execute_full_pass(self, checker, check_params, db_conn):
+    def test_execute_full_pass(self, checker, check_params, db_conn, has_gmdb_data):
         """完整 execute 流程：_prepare（mock）→ _check → _record → _alert → PASS。"""
+        if not has_gmdb_data:
+            pytest.skip("gmdb_plate_info 表无数据，跳过")
         check_date, check_time, check_round = check_params
 
         # 准备快照数据（与线上表一致）
