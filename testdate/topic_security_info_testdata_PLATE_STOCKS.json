@@ -1,0 +1,31 @@
+{
+  "MSG_TYPE": "PLATE_STOCKS",
+  "SEND_DATE": 20260424,
+  "SEND_TIME": 170005,
+  "CONTENT": {
+    "item": {
+      "basisPlate": null,
+      "plateCode": "BK0477",
+      "plateName": "酿酒行业",
+      "plateType": 1,
+      "stocksNum": 3
+    },
+    "stockList": [
+      {
+        "stockCode": "SH600519",
+        "stockName": "贵州茅台",
+        "weight": "0.05"
+      },
+      {
+        "stockCode": "SZ000858",
+        "stockName": "五粮液",
+        "weight": "0.03"
+      },
+      {
+        "stockCode": "SH600809",
+        "stockName": "山西汾酒",
+        "weight": "0.02"
+      }
+    ]
+  }
+}

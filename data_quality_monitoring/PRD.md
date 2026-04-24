@@ -68,16 +68,16 @@
 ## 四、监控规则详细设计
 ## 4.1 监控项 M1：gmdb_plate_info 完整性检查
 ## 4.1.1 监控目标
-验证 mysql `gmdb_plate_info` 表中的 `stkcode`（板块代码）与 Pulsar的topic `security_info` 中实时消息解码后得到的 `stkcode` 完全一致。
+验证 mysql `gmdb_plate_info` 表中 `mst_type` 为 `INDUSTRY_PLATE_INFO`、`REGION_PLATE_INFO`、`HOTIDEA_PLATE_INFO` 的记录的 `std_stkcode`（标准板块代码）与 Pulsar的topic `security_info` 中实时消息解码后得到的 `std_stkcode` 完全一致。
 
 ### 4.1.2 监控规则
 | 属性 | 值 |
 |------|-----|
-| **监控对象** | mysql `gmdb_plate_info` 的 `stkcode` 字段 vs Pulsar  topic `security_info` 中解码后的 `stkcode` |
+| **监控对象** | mysql `gmdb_plate_info` 中 mst_type 为板块类型的 `std_stkcode` 字段 vs Pulsar topic `security_info` 中解码后对应类型的 `std_stkcode` |
 | **监控维度** | 完整性 |
 | **监控时间** | 每天 09:00 - 09:18 |
 | **监控频率** | 每 9 分钟一次（即 09:00、09:09、09:18，共 3 次） |
-| **比对方式** | 等价比对：线上表 stkcode 集合 ⊇ 临时表 stkcode 集合，且无多余 |
+| **比对方式** | 等价比对：线上表 std_stkcode 集合 ⊇ 临时表 std_stkcode 集合，且无多余；限定 mst_type IN ('INDUSTRY_PLATE_INFO','REGION_PLATE_INFO','HOTIDEA_PLATE_INFO') |
 | **告警条件** | ① 临时表有但线上表无 → 告警"数据遗漏" ② 线上表有但临时表无 → 告警"数据多余" |
 | **告警级别** | ERROR |
 | **通过级别** | INFO |
@@ -104,7 +104,7 @@
 ## 4.2 监控项 M2：gmdb_plate_info 及时性检查
 ## 4.2.1 监控目标
 
-验证 MySQL表 `gmdb_plate_info` 在每天盘前时段存在 `send_date = 当天日期` 的数据
+验证 MySQL表 `gmdb_plate_info` 在每天盘前时段存在 `send_date = 当天日期` 且 `mst_type` 为 `INDUSTRY_PLATE_INFO`、`REGION_PLATE_INFO`、`HOTIDEA_PLATE_INFO` 的数据
 
 #### 4.2.2 监控规则
 
@@ -114,7 +114,7 @@
 | **监控维度** | 及时性 |
 | **监控时间** | 每天 09:00 - 09:18 |
 | **监控频率** | 每 9 分钟一次（即 09:00、09:09、09:18，共 3 次） |
-| **检查条件** | 查询 `gmdb_plate_info` 中是否存在 `send_date = current_date` 的记录 |
+| **检查条件** | 查询 `gmdb_plate_info` 中是否存在 `send_date = current_date` 且 `mst_type IN ('INDUSTRY_PLATE_INFO','REGION_PLATE_INFO','HOTIDEA_PLATE_INFO')` 的记录 |
 | **告警条件** | 查询结果为空（无当天数据）→ 告警"数据未及时到达" |
 | **告警级别** | ERROR |
 | **通过级别** | INFO |
@@ -130,7 +130,7 @@
 ## 4.3 监控项 M3：gmdb_plate_info 准确性检查
 
 #### 4.3.1 监控目标
-验证 mysql `gmdb_plate_info` 集合中所有字段数据非空且满足字段类型约束。
+验证 mysql `gmdb_plate_info` 中 `mst_type` 为 `INDUSTRY_PLATE_INFO`、`REGION_PLATE_INFO`、`HOTIDEA_PLATE_INFO` 的记录的所有字段数据非空且满足字段类型约束。
 #### 4.3.2 监控规则
 
 | 属性 | 值 |
@@ -147,14 +147,14 @@
 
 | 字段名 | 是否必填 | 数据类型 | 类型校验规则 | 说明 |
 |--------|----------|----------|-------------|------|
-| `stkcode` | 是 | string | 非空字符串，匹配正则 `^[0-9]{6}$` | 板块代码，6位数字 |
+| `stkcode` | 是 | string | 非空字符串，匹配正则 `^[0-9]{4}$` | 板块代码，4位数字 |
 | `stkname` | 是 | string | 非空字符串 | 板块名称 |
-| `std_stkcode` | 是 | string | 非空字符串，匹配正则 `^[0-9]{6}\.[A-Z]{2}$` | 标准板块代码，6位数字.2位大写字母 |
+| `std_stkcode` | 是 | string | 非空字符串，匹配正则 `^[0-9]{4}\.[A-Z]{2}$` | 标准板块代码，4位数字.2位大写字母 |
 | `zhishubankuaileibie` | 是 | string | 非空字符串 | 指数板块类别 |
 | `mst_type` | 是 | string | 枚举值：`INDUSTRY_PLATE_INFO` / `REGION_PLATE_INFO` / `HOTIDEA_PLATE_INFO` | 消息类型 |
-| `send_date` | 是 | string | 非空字符串，匹配正则 `^\d{4}-\d{2}-\d{2}$` 或 `^\d{8}$` | 发送日期 |
-| `send_time` | 否 | string | 字符串类型 | 发送时间 |
-| `sum` | 否 | number | 数值类型（int/float），≥ 0 | 成分股数量 |  #如果线上表没有就不判断，有这判断这一情况；
+| `send_date` | 是 | number | 匹配正则 `^\d{8}$` | 发送日期，8位数字 |
+| `send_time` | 否 | number | 数值类型 | 发送时间 |
+| `index_type_name` | 否 | string | 字符串类型 | 指数类型名称 |
 
 #### 4.3.5 过程数据存储
 
@@ -168,13 +168,13 @@
 ### 4.4 监控项 M4：ads_fin_index_compn_stock_interface_ds 完整性检查
 #### 4.4.1 监控目标
 
-验证 mysql `ads_fin_index_compn_stock_interface_ds` 中的 `compn_stock_code`（成分股代码）与 Pulsar topic `security_info` 解码后得到的临时表“dqm_security_info_snapshot” 中的`compn_stock_code` 完全一致。
+验证 mysql `ads_fin_index_compn_stock_interface_ds`（该表无 mst_type 字段，所有数据即 PLATE_STOCKS 类型）的全部记录的 `compn_stock_code`（成分股代码）与 Pulsar topic `security_info` 解码后得到的临时表"dqm_security_info_snapshot"中 `mst_type = 'PLATE_STOCKS'` 的 `compn_stock_code` 完全一致。
 
 #### 4.4.2 监控规则
 
 | 属性 | 值 |
 |------|-----|
-| **监控对象** | mysql `ads_fin_index_compn_stock_interface_ds` 的 `compn_stock_code` 字段 vs 临时表“dqm_security_info_snapshot”的 `compn_stock_code` |
+| **监控对象** | mysql `ads_fin_index_compn_stock_interface_ds`（无 mst_type 字段，查询全部数据）的 `compn_stock_code` 字段 vs 临时表"dqm_security_info_snapshot"中 `mst_type = 'PLATE_STOCKS'` 的 `compn_stock_code` |
 | **监控维度** | 完整性 |
 | **监控时间** | 每天 02:00、08:42、08:58、09:04（09:03 晚1分钟） |
 | **监控频率** | 每个时间点执行一次，共 4 次 |
@@ -197,7 +197,7 @@
 ### 4.5 监控项 M5：ads_fin_index_compn_stock_interface_ds 及时性检查
 #### 4.5.1 监控目标
 
-验证 mysql `ads_fin_index_compn_stock_interface_ds` 表在每天关键时间点存在 `send_date = 当天日期` 的 `PLATE_STOCKS` 类型数据。
+验证 mysql `ads_fin_index_compn_stock_interface_ds`（该表无 mst_type 字段，所有数据即 PLATE_STOCKS 类型）表在每天关键时间点存在 `send_date = 当天日期` 的数据。
 
 #### 4.5.2 监控规则
 
@@ -220,13 +220,13 @@
 ### 4.6 监控项 M6：ads_fin_index_compn_stock_interface_ds 准确性检查
 #### 4.6.1 监控目标
 
-验证 mysql `ads_fin_index_compn_stock_interface_ds` 表中关键字段数据非空且满足字段类型约束。
+验证 mysql `ads_fin_index_compn_stock_interface_ds`（该表无 mst_type 字段，所有数据即 PLATE_STOCKS 类型）表的全部记录的关键字段数据非空且满足字段类型约束。
 
 #### 4.6.2 监控规则
 
 | 属性 | 值 |
 |------|-----|
-| **监控对象** | mysql `ads_fin_index_compn_stock_interface_ds` |
+| **监控对象** | mysql `ads_fin_index_compn_stock_interface_ds`（无 mst_type 字段，查询全部数据） |
 | **监控维度** | 准确性（非空 + 类型） |
 | **监控时间** | 每天 02:00、08:42、08:58、09:04 |
 | **监控频率** | 每个时间点执行一次，共 4 次 |
@@ -238,11 +238,11 @@
 
 | 字段名 | 是否必填 | 数据类型 | 类型校验规则 | 说明 |
 |--------|----------|----------|-------------|------|
-| `stkcode` | 是 | string | 非空字符串 | 板块代码 |
-| `compn_stock_code` | 是 | string | 非空字符串 | 成分股代码 |
+| `stkcode` | 是 | string | 非空字符串，匹配正则 `^[0-9]{4}\.[A-Z]{2}$` | 板块代码，4位数字.2位大写字母 |
+| `compn_stock_code` | 是 | string | 非空字符串，匹配正则 `^[A-Z]{2}\d{6}$` | 成分股代码，2位交易所+6位数字 |
 | `compn_stock_name` | 是 | string | 非空字符串 | 成分股简称 |
 | `index_name` | 是 | string | 非空字符串 | 指数简称（板块名称） |
-| `send_date` | 是 | string | 非空字符串，匹配日期格式 | 交易日期/发送日期 |
+| `send_date` | 是 | number | 匹配正则 `^\d{8}$` | 交易日期/发送日期，8位数字 |
 | `compn_stock_thscode` | 否 | string | 字符串类型 | 成分股同花顺代码 |
 | `valid_from` | 否 | number | 数值类型 | 生效起始时间戳 |
 | `valid_to` | 否 | number | 数值类型 | 生效结束时间戳 |

@@ -21,10 +21,18 @@ class TimelinessChecker(BaseChecker):
     """及时性检查器
 
     M2: gmdb_plate_info 的 send_date 是否存在当天数据
+        查询线上表 mst_type IN ('INDUSTRY_PLATE_INFO','REGION_PLATE_INFO','HOTIDEA_PLATE_INFO') 的数据
     M5: ads_fin_index_compn_stock_interface_ds 的 send_date 是否存在当天数据
+        线上表无 mst_type 字段（所有数据即 PLATE_STOCKS 类型），查询全部数据；
+        快照表限定 mst_type = 'PLATE_STOCKS'
 
     注意：send_date 在数据库中为 int 类型，格式为 YYYYMMDD（如 20260421）
     """
+
+    # M1/M2/M3 对应的板块消息类型
+    PLATE_MST_TYPES = ("INDUSTRY_PLATE_INFO", "REGION_PLATE_INFO", "HOTIDEA_PLATE_INFO")
+    # M4/M5/M6 对应的成分股消息类型
+    STOCK_MST_TYPES = ("PLATE_STOCKS",)
 
     def __init__(
         self,
@@ -36,6 +44,13 @@ class TimelinessChecker(BaseChecker):
         self.table = table
         self._mysql_storage = mysql_storage
         self._check_result_repo = CheckResultRepository(mysql_storage)
+        # 当前监控项对应的 mst_type 过滤列表
+        if monitor_id == MonitorID.M2:
+            self._mst_types = self.PLATE_MST_TYPES
+        elif monitor_id == MonitorID.M5:
+            self._mst_types = self.STOCK_MST_TYPES
+        else:
+            self._mst_types = ()
 
     @staticmethod
     def _date_to_send_date(check_date: date) -> int:
@@ -51,10 +66,10 @@ class TimelinessChecker(BaseChecker):
         log = get_logger(self.monitor_id, self.dimension)
         send_date_val = self._date_to_send_date(check_date)
 
-        # M2: 按 mst_type 分组统计当天各类型数据量
-        # M5: ads_fin 表无 mst_type 字段，直接查 send_date 的记录数
+        # M2: 线上表 gmdb_plate_info 有 mst_type 字段，按板块类型过滤查询
+        # M5: 线上表 ads_fin_index 无 mst_type 字段（所有数据即 PLATE_STOCKS 类型），直接查总量
         if self.monitor_id == MonitorID.M2:
-            results = self._query_by_mst_type(send_date_val)
+            results = self._query_by_mst_types(send_date_val, self._mst_types)
         elif self.monitor_id == MonitorID.M5:
             results = self._query_count(send_date_val)
         else:
@@ -81,27 +96,20 @@ class TimelinessChecker(BaseChecker):
             "details": results,
         }
 
-    def _query_by_mst_type(self, send_date: int, mst_type: str | None = None) -> list[dict]:
-        """按 mst_type 分组查询当天数据量。
+    def _query_by_mst_types(self, send_date: int, mst_types: tuple[str, ...]) -> list[dict]:
+        """按 mst_type 列表过滤查询当天数据量。
 
         Args:
             send_date: 发送日期（YYYYMMDD 整数格式）
-            mst_type: 消息类型过滤，为 None 时查所有类型并分组
+            mst_types: 消息类型过滤元组
         """
-        if mst_type:
-            sql = (
-                f"SELECT mst_type, COUNT(*) AS cnt FROM `{self.table}` "
-                f"WHERE send_date = %s AND mst_type = %s "
-                f"GROUP BY mst_type"
-            )
-            rows = self._mysql_storage.execute_query(sql, (send_date, mst_type))
-        else:
-            sql = (
-                f"SELECT mst_type, COUNT(*) AS cnt FROM `{self.table}` "
-                f"WHERE send_date = %s "
-                f"GROUP BY mst_type"
-            )
-            rows = self._mysql_storage.execute_query(sql, (send_date,))
+        placeholders = ", ".join(["%s"] * len(mst_types))
+        sql = (
+            f"SELECT mst_type, COUNT(*) AS cnt FROM `{self.table}` "
+            f"WHERE send_date = %s AND mst_type IN ({placeholders}) "
+            f"GROUP BY mst_type"
+        )
+        rows = self._mysql_storage.execute_query(sql, (send_date, *mst_types))
 
         results = []
         for row in rows:

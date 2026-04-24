@@ -40,7 +40,7 @@ GMDB_PLATE_INFO_FIELDS = [
         "name": "stkcode",
         "required": True,
         "type": "string",
-        "regex": r"^[0-9]{6}$",
+        "regex": r"^[0-9]{4}$",
         "enum": None,
     },
     {
@@ -54,7 +54,7 @@ GMDB_PLATE_INFO_FIELDS = [
         "name": "std_stkcode",
         "required": True,
         "type": "string",
-        "regex": r"^[0-9]{6}\.[A-Z]{2}$",
+        "regex": r"^[0-9]{4}\.[A-Z]{2}$",
         "enum": None,
     },
     {
@@ -100,14 +100,14 @@ ADS_FIN_INDEX_FIELDS = [
         "name": "stkcode",
         "required": True,
         "type": "string",
-        "regex": None,
+        "regex": r"^[0-9]{4}\.[A-Z]{2}$",
         "enum": None,
     },
     {
         "name": "compn_stock_code",
         "required": True,
         "type": "string",
-        "regex": None,
+        "regex": r"^[A-Z]{2}\d{6}$",
         "enum": None,
     },
     {
@@ -166,8 +166,16 @@ class AccuracyChecker(BaseChecker):
     """准确性检查器
 
     M3: gmdb_plate_info 字段非空 + 类型校验
+        查询线上表 mst_type IN ('INDUSTRY_PLATE_INFO','REGION_PLATE_INFO','HOTIDEA_PLATE_INFO') 的数据
     M6: ads_fin_index_compn_stock_interface_ds 字段非空 + 类型校验
+        线上表无 mst_type 字段（所有数据即 PLATE_STOCKS 类型），查询全部数据；
+        快照表限定 mst_type = 'PLATE_STOCKS'
     """
+
+    # M1/M2/M3 对应的板块消息类型
+    PLATE_MST_TYPES = ("INDUSTRY_PLATE_INFO", "REGION_PLATE_INFO", "HOTIDEA_PLATE_INFO")
+    # M4/M5/M6 对应的成分股消息类型
+    STOCK_MST_TYPES = ("PLATE_STOCKS",)
 
     def __init__(
         self,
@@ -183,13 +191,16 @@ class AccuracyChecker(BaseChecker):
         self._check_result_repo = CheckResultRepository(mysql_storage)
         self._accuracy_detail_repo = AccuracyDetailRepository(mysql_storage)
 
-        # 根据监控项选择字段约束
+        # 根据监控项选择字段约束和 mst_type 过滤
         if monitor_id == MonitorID.M3:
             self._field_rules = GMDB_PLATE_INFO_FIELDS
+            self._mst_types = self.PLATE_MST_TYPES
         elif monitor_id == MonitorID.M6:
             self._field_rules = ADS_FIN_INDEX_FIELDS
+            self._mst_types = self.STOCK_MST_TYPES
         else:
             self._field_rules = []
+            self._mst_types = ()
 
     def _prepare(self, check_date: date, check_time: datetime, check_round: int):
         """准确性检查无需 Pulsar 采集，直接查线上表即可。"""
@@ -234,11 +245,24 @@ class AccuracyChecker(BaseChecker):
         }
 
     def _query_table_data(self, send_date: int) -> list[dict]:
-        """查询线上表中 send_date = check_date 的数据。"""
+        """查询线上表中 send_date = check_date 的数据。
+
+        M3: gmdb_plate_info 有 mst_type 字段，按板块类型过滤
+        M6: ads_fin_index 无 mst_type 字段（所有数据即 PLATE_STOCKS 类型），不过滤
+        """
         field_names = ", ".join(f"`{r['name']}`" for r in self._field_rules)
-        sql = f"SELECT `{self.key_field}`, {field_names} FROM `{self.table}` WHERE send_date = %s"
+        if self._mst_types and self.monitor_id == MonitorID.M3:
+            placeholders = ", ".join(["%s"] * len(self._mst_types))
+            sql = (
+                f"SELECT `{self.key_field}`, {field_names} FROM `{self.table}` "
+                f"WHERE send_date = %s AND mst_type IN ({placeholders})"
+            )
+            params = (send_date, *self._mst_types)
+        else:
+            sql = f"SELECT `{self.key_field}`, {field_names} FROM `{self.table}` WHERE send_date = %s"
+            params = (send_date,)
         try:
-            return self._mysql_storage.execute_query(sql, (send_date,))
+            return self._mysql_storage.execute_query(sql, params)
         except Exception as e:
             log = get_logger(self.monitor_id, self.dimension)
             log.critical(f"MySQL 查询线上表失败 | table={self.table}, error={e}")

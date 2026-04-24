@@ -1,0 +1,10 @@
+{
+  "MSG_TYPE": "INDUSTRY_PLATE_INFO",
+  "SEND_DATE": 20260424,
+  "SEND_TIME": 164030,
+  "CONTENT": [
+    { "stockCode": "BK0477", "stockName": "酿酒行业" },
+    { "stockCode": "BK0438", "stockName": "医药制造" },
+    { "stockCode": "BK0447", "stockName": "电子元件" }
+  ]
+}

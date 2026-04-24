@@ -29,15 +29,22 @@ from src.dqm.storage.repository import CheckResultRepository, SnapshotRepository
 class CompletenessChecker(BaseChecker):
     """完整性检查器
 
-    M1: gmdb_plate_info 的 stkcode vs Pulsar 快照的 stkcode（全局比对）
+    M1: gmdb_plate_info 的 std_stkcode vs Pulsar 快照的 std_stkcode（全局比对）
+        快照表限定 mst_type IN ('INDUSTRY_PLATE_INFO','REGION_PLATE_INFO','HOTIDEA_PLATE_INFO')
     M4: ads_fin_index_compn_stock_interface_ds 的 compn_stock_code vs Pulsar 快照的 compn_stock_code
         （按 stkcode 分组比对）
+        快照表限定 mst_type = 'PLATE_STOCKS'
 
     快照采集策略：
     - Pulsar 采集当天全量消息（从 Earliest 开始，空闲超时后停止）
     - 采集结果一次性写入快照表，M1 和 M4 共用同一份快照
     - 快照按 check_date 标识，同一天只需采集一次，各轮检查复用已有快照
     """
+
+    # M1/M2/M3 对应的板块消息类型
+    PLATE_MST_TYPES = ("INDUSTRY_PLATE_INFO", "REGION_PLATE_INFO", "HOTIDEA_PLATE_INFO")
+    # M4/M5/M6 对应的成分股消息类型
+    STOCK_MST_TYPES = ("PLATE_STOCKS",)
 
     def __init__(
         self,
@@ -57,6 +64,13 @@ class CompletenessChecker(BaseChecker):
         # Pulsar 采集状态，在 _prepare 中更新
         self._pulsar_failed = False
         self._pulsar_error = ""
+        # 当前监控项对应的 mst_type 过滤列表
+        if monitor_id == MonitorID.M1:
+            self._mst_types = self.PLATE_MST_TYPES
+        elif monitor_id == MonitorID.M4:
+            self._mst_types = self.STOCK_MST_TYPES
+        else:
+            self._mst_types = ()
 
     @staticmethod
     def _date_to_send_date(check_date: date) -> int:
@@ -291,13 +305,23 @@ class CompletenessChecker(BaseChecker):
         return {k: list(set(v)) for k, v in grouped.items()}
 
     def _query_snapshot_grouped_keys(self, check_date: date, check_round: int) -> dict[str, list[str]]:
-        """从快照表查询按 group_field 分组的 key_field 集合（按 check_date 查询，不限 round）。"""
-        sql = (
-            f"SELECT `{self.group_field}`, `{self.key_field}` FROM `dqm_security_info_snapshot` "
-            f"WHERE check_date = %s "
-            f"AND `{self.group_field}` IS NOT NULL AND `{self.key_field}` IS NOT NULL"
-        )
-        rows = self._mysql_storage.execute_query(sql, (check_date,))
+        """从快照表查询按 group_field 分组的 key_field 集合（按 check_date 查询，不限 round，按 mst_type 过滤）。"""
+        if self._mst_types:
+            placeholders = ", ".join(["%s"] * len(self._mst_types))
+            sql = (
+                f"SELECT `{self.group_field}`, `{self.key_field}` FROM `dqm_security_info_snapshot` "
+                f"WHERE check_date = %s AND mst_type IN ({placeholders}) "
+                f"AND `{self.group_field}` IS NOT NULL AND `{self.key_field}` IS NOT NULL"
+            )
+            params = (check_date, *self._mst_types)
+        else:
+            sql = (
+                f"SELECT `{self.group_field}`, `{self.key_field}` FROM `dqm_security_info_snapshot` "
+                f"WHERE check_date = %s "
+                f"AND `{self.group_field}` IS NOT NULL AND `{self.key_field}` IS NOT NULL"
+            )
+            params = (check_date,)
+        rows = self._mysql_storage.execute_query(sql, params)
 
         grouped: dict[str, list[str]] = {}
         for row in rows:
@@ -320,12 +344,21 @@ class CompletenessChecker(BaseChecker):
             raise
 
     def _query_snapshot_keys(self, check_date: date, check_round: int) -> list[str]:
-        """从临时快照表查询 key_field 集合（按 check_date 查询，不限 round）。"""
-        sql = (
-            f"SELECT DISTINCT `{self.key_field}` FROM `dqm_security_info_snapshot` "
-            f"WHERE check_date = %s"
-        )
-        rows = self._mysql_storage.execute_query(sql, (check_date,))
+        """从临时快照表查询 key_field 集合（按 check_date 查询，不限 round，按 mst_type 过滤）。"""
+        if self._mst_types:
+            placeholders = ", ".join(["%s"] * len(self._mst_types))
+            sql = (
+                f"SELECT DISTINCT `{self.key_field}` FROM `dqm_security_info_snapshot` "
+                f"WHERE check_date = %s AND mst_type IN ({placeholders})"
+            )
+            params = (check_date, *self._mst_types)
+        else:
+            sql = (
+                f"SELECT DISTINCT `{self.key_field}` FROM `dqm_security_info_snapshot` "
+                f"WHERE check_date = %s"
+            )
+            params = (check_date,)
+        rows = self._mysql_storage.execute_query(sql, params)
         return [row[self.key_field] for row in rows if row.get(self.key_field)]
 
     def _record(self, check_date: date, check_time: datetime, check_round: int, result: dict):
